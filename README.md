@@ -18,6 +18,32 @@ Handles indexing and searching of the database in it's own api.
 
 - Stop: `docker stop postgres-instance`
 
+
+
+
+### Glassfish Setup and Usage
+
+- Download [Glassfish](https://projects.eclipse.org/projects/ee4j.glassfish/downloads)
+
+- Extract and **cd** into folder
+
+- Run `./glassfish/bin/asadmin start-domain domain1` to start the server 
+
+- Once running you can visit `http://localhost:4848/` for admin console
+
+#### Build and Deplay war file
+
+##### Eclipse
+
+- Right click the project `> Export > War File`
+
+- Choose output and hit finish
+
+- **cd** into the glassfish folder and run `./glassfish/bin/asadmin deploy <path-to-war-file>`
+
+- Once deployed visit `http://localhost:8080/searchIndex/api`
+
+
 ### Setting up IntelliJ
 This will be used for running the glassfish server/api
 

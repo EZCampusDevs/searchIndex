@@ -24,11 +24,13 @@ Handles indexing and searching of the database in it's own api.
 
 ### Glassfish Setup and Usage
 
-- Download [Glassfish](https://projects.eclipse.org/projects/ee4j.glassfish/downloads)
+- Download [Glassfish](https://projects.eclipse.org/projects/ee4j.glassfish/downloads) (Full Profile)
 
 - Extract and **cd** into folder
 
 - Run `./glassfish/bin/asadmin start-domain domain1` to start the server 
+
+- NOTE: Windows you need to run `./glassfish/bin/asadmin.bat`
 
 - Once running you can visit `http://localhost:4848/` for admin console
 

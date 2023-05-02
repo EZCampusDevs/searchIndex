@@ -5,7 +5,18 @@
 Handles indexing and searching of the database in it's own api.
 
 
+### Postgres Setup (Docker)
 
+#### Creating Docker image
+- Get postgres: `docker pull postgres`
+
+- Create postgres container: `docker run --name postgres-instance -e POSTGRES_PASSWORD=<password> --publish 5432:5432 -d postgres`
+
+#### Starting / Stopping Postgres
+
+- Start: `docker start postgres-instance`
+
+- Stop: `docker stop postgres-instance`
 
 ### Setting up IntelliJ
 This will be used for running the glassfish server/api

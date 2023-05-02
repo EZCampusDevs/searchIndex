@@ -7,16 +7,17 @@ Handles indexing and searching of the database in it's own api.
 
 ### Postgres Setup (Docker)
 
-#### Creating Docker image
-- Get postgres: `docker pull postgres`
+*   #### Creating Docker image
 
-- Create postgres container: `docker run --name postgres-instance -e POSTGRES_PASSWORD=<password> --publish 5432:5432 -d postgres`
+       - Get postgres: `docker pull postgres`
 
-#### Starting / Stopping Postgres
+       - Create postgres container: `docker run --name postgres-instance -e POSTGRES_PASSWORD=<password> --publish 5432:5432 -d postgres`
 
-- Start: `docker start postgres-instance`
+*   #### Starting / Stopping Postgres
 
-- Stop: `docker stop postgres-instance`
+       - Start: `docker start postgres-instance`
+
+       - Stop: `docker stop postgres-instance`
 
 
 
@@ -31,48 +32,48 @@ Handles indexing and searching of the database in it's own api.
 
 - Once running you can visit `http://localhost:4848/` for admin console
 
-#### Build and Deplay war file
 
-##### Eclipse
 
-- Right click the project `> Export > War File`
+### Build and Deplay war file
 
-- Choose output and hit finish
+*   #### Eclipse (EE)
 
-- **cd** into the glassfish folder and run `./glassfish/bin/asadmin deploy <path-to-war-file>`
+    -   Right click the project `> Export > War File`
 
-- Once deployed visit `http://localhost:8080/searchIndex/api`
+    -   Choose output and hit finish
+
+    -   **cd** into the glassfish folder and run `./glassfish/bin/asadmin deploy <path-to-war-file>`
+
+    -   Once deployed visit `http://localhost:8080/searchIndex/api`
+
+
 
 
 ### Setting up IntelliJ
+
 This will be used for running the glassfish server/api
 
-Open the root in IntelliJ
+- Open the root in IntelliJ
 
-Allow it to create indexes/paths if prompted
+- Allow it to create indexes/paths if prompted
 
-Create run config:
+- Create run config:
 `Run (at the top) > Edit Configurations > + (in top left) > Glassfish Server > Local`
 
-Run config settings:
-Application Server:
+Under Run config settings:
 
-Select a fresh version of glassfish 7.0.2 to prevent possible conflicts
+- Application Server: `Glassfish 7.x.x`
 
-URL:
-```
-http://localhost:8080/searchIndex-1.0-SNAPSHOT/api/
-```
+- URL: `http://localhost:8080/searchIndex-1.0-SNAPSHOT/api/`
 
-JRE: Using OpenJDK-17 Temurin (17 or higher should be find)
+- JRE: `OpenJDK-17 Temurin` or similar (17 or higher should be find)
 
-Server Domain: `domain1`
+- Server Domain: `domain1`
 
-Username: `admin`
+- Username: `admin`
 
-Password: (there is no password)
+- Password: (there is no password)
 
-Under `Deployment` at the top
-` + > Artifact > War artifact`
+- Under `Deployment` at the top ` + > Artifact > War artifact`
 
 Apply changes and close

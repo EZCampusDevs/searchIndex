@@ -20,6 +20,50 @@ Handles indexing and searching of the database in it's own api.
        - Stop: `docker stop postgres-instance`
 
 
+    If you cannot access postgres on `localhost:5432`,
+    
+    Run `docker inspect postgres-instance | grep IPAddress` or `docker inspect postgres-instance` to find:
+    ```json
+    "IPAddress": "xxx.xx.x.x",
+    ```
+    To get the direct hostname
+
+
+*   #### Looking in the database (PGAdmin)
+
+       - Get PGAdmin `docker pull dpage/pgadmin4`
+
+       - Create PGAdmin container:
+       ```shell
+        docker run \
+             --name pgadmin-instance \
+             -p 5050:80 \
+             -e "PGADMIN_DEFAULT_EMAIL=name@gmail.com" \
+             -e "PGADMIN_DEFAULT_PASSWORD=admin" \
+             -d dpage/pgadmin4
+       ```
+
+       - Start: `docker start pgadmin-instance`
+
+       - Stop: `docker stop pgadmin-instance`
+
+       If you cannot access it via `localhost:80/login` or `localhost:5050/login`,
+
+       **NOTE:** Sometimes the browser matters, so if either of the above don't work try swapping browsers.
+
+       Run `docker inspect pgadmin-instance | grep IPAddress` or `docker inspect pgadmin-instance` to find:
+       ```json
+        "IPAddress": "xxx.xx.x.x",
+       ```
+       And try using this instead.
+
+
+       Once you get to the login page, use the email and password from the `docker run` command from earlier
+
+       Then add a new server, set any name, for host you can try `localhost` or the host from the `docker inspect` under the postgres section.
+
+       Username should be `postgres` by default, password is whatever you set earlier.
+
 
 
 ### Glassfish Setup and Usage

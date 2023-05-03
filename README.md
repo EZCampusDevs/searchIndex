@@ -11,7 +11,14 @@ Handles indexing and searching of the database in it's own api.
 
        - Get postgres: `docker pull postgres`
 
-       - Create postgres container: `docker run --name postgres-instance -e POSTGRES_PASSWORD=<password> --publish 5432:5432 -d postgres`
+       - Create postgres container: 
+       ```shell
+       docker run \
+            --name postgres-instance \
+            -e POSTGRES_PASSWORD=<password> \
+            --publish 5432:5432 \
+            -d postgres
+       ```
 
 *   #### Starting / Stopping Postgres
 
@@ -72,16 +79,22 @@ Handles indexing and searching of the database in it's own api.
 
 - Extract and **cd** into folder
 
-- Run `./glassfish/bin/asadmin start-domain domain1` to start the server (Works for Linux)
+- For **Linux** Run `./glassfish/bin/asadmin start-domain domain1` to start the server
 
-- **NOTE:** Windows you need to run `./glassfish/bin/asadmin.bat` then in the CLI tool, run `start-domain domain1`
-
-- *(Windows ONLY)* If you're running into an issue where starting the domain1 server times out. Check if anything is running on ports `8080` or `4848`
-- Do `netstat -ano | findstr :<PORT>` to see if anything is running on that port. If something shows up, take the **PID** number (last column) and use that to kill the process
-- Do `taskkill /PID <PID> /F` to kill process. (example: `netstat -ano | findstr :8080` -> Task running with PID: 1234 -> `taskkill /PID 1234 /F`)
-- Now try `start-domain domain1` again, should work.
+- For **Windows** Run `./glassfish/bin/asadmin.bat start-domain domain1` to start the server
 
 - Once running you can visit `http://localhost:4848/` for admin console
+
+* #### Troubleshooting
+
+    - *(Windows ONLY)* If you're running into an issue where starting the domain1 server times out. Check if anything is running on ports `8080` or `4848`
+      
+    - Do `netstat -ano | findstr :<PORT>` to see if anything is running on that port. If something shows up, take the **PID** number (last column) and use that to kill the process
+       
+    - Do `taskkill /PID <PID> /F` to kill process. (example: `netstat -ano | findstr :8080` -> Task running with PID: 1234 -> `taskkill /PID 1234 /F`)
+       
+    - Now try `start-domain domain1` again, should work.
+
 
 ### Build and Deplay war file
 

@@ -96,11 +96,15 @@ Handles indexing and searching of the database in it's own api.
     - Now try `start-domain domain1` again, should work.
 
 
-### Build and Deplay war file
+### Build and Deplay .war file
 
 *   #### Eclipse (EE)
 
     -   Right click the project `> Export > War File`
+
+    #### NetBeans 
+
+    - Right click the project in file explorer `> Clean and Build` then check the console for where the .war file was built.
 
     -   Choose output and hit finish
 
@@ -111,7 +115,31 @@ Handles indexing and searching of the database in it's own api.
     - Example, my .WAR compiled as `searchIndex-1.0-SNAPSHOT.war` therefore I access the api via: `http://localhost:8080/searchIndex-1.0-SNAPSHOT/api`
 
 
-### Setting up IntelliJ
+### Update your .war file with Glassfish CLI 
+##### (Check Shell Example Below)
+
+- 1. Run `asadmin list-applications --type web` to view all Web Deployments of Glassfish currently running. 
+- 2. Run `undeploy <Web Instance>` , Example: `undeploy searchIndex-1.0-SNAPSHOT` 
+- 3. Run `deploy <path-to-war-file>` to deploy new version of API
+
+The Example Below is from the Windows **asadmin.bat** CLI tool
+
+```shell
+asadmin> list-applications --type web
+searchIndex-1.0-SNAPSHOT  <web>
+Command list-applications executed successfully.
+
+asadmin> undeploy searchIndex-1.0-SNAPSHOT
+Command undeploy executed successfully.
+
+asadmin> deploy C:/Users/jason/.m2/repository/org/ezcampus/searchIndex/1.0-SNAPSHOT/searchIndex-1.0-SNAPSHOT.war
+Application deployed with name searchIndex-1.0-SNAPSHOT.
+Command deploy executed successfully.
+```
+
+<hr/>
+
+##### Setting up IntelliJ 
 
 This will be used for running the glassfish server/api
 

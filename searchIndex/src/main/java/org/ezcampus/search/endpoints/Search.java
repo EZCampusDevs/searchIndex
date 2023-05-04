@@ -1,4 +1,4 @@
-package org.ezcampus.searchIndex.endpoints;
+package org.ezcampus.search.endpoints;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

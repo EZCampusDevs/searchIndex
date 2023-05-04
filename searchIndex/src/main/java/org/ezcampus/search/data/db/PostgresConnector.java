@@ -1,4 +1,4 @@
-package org.ezcampus.searchIndex.data.db;
+package org.ezcampus.search.data.db;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;

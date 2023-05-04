@@ -18,7 +18,7 @@ Handles indexing and searching of the database in it's own api.
             --name mysql-instance \
             -e MYSQL_DATABASE=<mysql_db> \
             -e MYSQL_USER=<username> \
-            -e MYSQL_PPASSWORD=<password> \
+            -e MYSQL_PASSWORD=<password> \
             -e MYSQL_ROOT_PASSWORD=<root_password> \
             --publish 3306:3306 \
             -d mysql

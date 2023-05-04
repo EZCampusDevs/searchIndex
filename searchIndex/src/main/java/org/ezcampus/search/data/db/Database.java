@@ -1,11 +1,11 @@
-package org.ezcampus.searchIndex.data.db;
+package org.ezcampus.search.data.db;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.ezcampus.searchIndex.System.GlobalSettings;
-import org.ezcampus.searchIndex.System.ResourceLoader;
+import org.ezcampus.search.System.GlobalSettings;
+import org.ezcampus.search.System.ResourceLoader;
 import org.tinylog.Logger;
 
 public class Database
@@ -26,10 +26,11 @@ public class Database
 
         connector = new MySQLConnector();
         connector.checkJDBCDriver();
-        connector.username = "root";
+        connector.databaseName = "hibernate_db";
+        connector.username = "test";
         connector.password = "root";
         
-        Connection c = connector.getConnection("mysql");
+        Connection c = connector.getConnection("hibernate_db");
         
 //        createNewDatabase();
 //        createTables(true);

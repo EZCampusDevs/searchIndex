@@ -1,4 +1,4 @@
-package org.ezcampus.searchIndex.System;
+package org.ezcampus.search.System;
 
 import org.tinylog.Logger;
 

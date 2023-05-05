@@ -3,6 +3,8 @@ package org.ezcampus.search.hibernate;
 import java.util.List;
 
 import org.ezcampus.search.System.ResourceLoader;
+import org.ezcampus.search.hibernate.entity.ClassType;
+import org.ezcampus.search.hibernate.entity.Term;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.SessionUtil;
 import org.hibernate.HibernateException;
@@ -50,11 +52,21 @@ public class App
 
 		try (Session session = SessionUtil.getSessionFactory().openSession())
 		{
+			
+			
+			
+			
 			List<Word> words = session.createQuery("FROM Word", Word.class).list();
 			for (Word word : words)
 			{
 				System.out.println(word);
 			}
+			
+			List<Term> terms = session.createQuery("FROM Term", Term.class).list();
+			List<ClassType> cTypes = session.createQuery("FROM ClassType", ClassType.class).list();
+			
+			
+			
 		}
 		catch (HibernateException ex)
 		{

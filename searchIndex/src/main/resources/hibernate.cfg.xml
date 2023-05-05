@@ -5,7 +5,7 @@
     <session-factory>
         <!-- JDBC Database connection settings -->
         <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306/hibernate_db?useSSL=false</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/hibernate_db</property>
         <property name="connection.username">test</property>
         <property name="connection.password">root</property>
         <!-- JDBC connection pool settings ... using built-in test pool -->
@@ -15,13 +15,15 @@
         <!-- Set the current session context -->
         <property name="current_session_context_class">thread</property>
         <!-- Drop and re-create the database schema on startup -->
-        <property name="hbm2ddl.auto">create-drop</property>
+       <!--  <property name="hbm2ddl.auto">create-drop</property> -->
         <!-- dbcp connection pool configuration -->
         <property name="hibernate.dbcp.initialSize">5</property>
         <property name="hibernate.dbcp.maxTotal">20</property>
         <property name="hibernate.dbcp.maxIdle">10</property>
         <property name="hibernate.dbcp.minIdle">5</property>
         <property name="hibernate.dbcp.maxWaitMillis">-1</property>
-        <mapping class="org.ezcampus.search.hibernate.entity.Student" />
+        
+        <!-- IMPORTANT, DO NOT FORGET TO PUT THIS HERE!!!!! -->
+        <mapping class="org.ezcampus.search.hibernate.entity.Word" />
     </session-factory>
 </hibernate-configuration>

@@ -157,4 +157,8 @@ public class CourseData {
 	public Integer getCreditHours() {
 		return creditHours;
 	}
+	
+	public String getClassType() {
+		return this.classType.getClassType();
+	}
 }

@@ -3,6 +3,8 @@ package org.ezcampus.search.hibernate;
 import java.util.List;
 
 import org.ezcampus.search.hibernate.entity.Student;
+import org.ezcampus.search.hibernate.entity.Word;
+
 import org.ezcampus.search.hibernate.util.SessionUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -16,6 +18,9 @@ public class App
 		Student student = new Student("Ramesh", "Fadatare", "rameshfadatare@javaguides.com");
 		Student student1 = new Student("John", "Cena", "john@javaguides.com");
 		
+                Word X = new Word("X");
+                Word Y = new Word("Y");
+                
 		Transaction transaction = null;
 		try (Session session = SessionUtil.getSessionFactory().openSession())
 		{
@@ -24,6 +29,9 @@ public class App
 			// save the student objects
 			session.persist(student);
 			session.persist(student1);
+                        
+                        session.persist(X);
+                        session.persist(Y);
 			// commit transaction
 			transaction.commit();
 		}

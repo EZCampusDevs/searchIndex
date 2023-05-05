@@ -6,10 +6,13 @@ import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.System.ResourceLoader;
 import org.tinylog.Logger;
 
+// MAIN ENTRY TO JAVA API PROGRAM
+
 @ApplicationPath("/")
 public class Program extends jakarta.ws.rs.core.Application
 {
-    // True Main Method here!!!
+	//Equivalent to main method:
+	
     public Program()
     {
         GlobalSettings.IS_DEBUG = true;

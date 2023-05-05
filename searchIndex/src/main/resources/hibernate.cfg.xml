@@ -14,6 +14,7 @@
         <property name="show_sql">true</property>
         <!-- Set the current session context -->
         <property name="current_session_context_class">thread</property>
+        
         <!-- Drop and re-create the database schema on startup -->
        <!--  <property name="hbm2ddl.auto">create-drop</property> -->
         <!-- dbcp connection pool configuration -->
@@ -25,5 +26,5 @@
         
         <!-- IMPORTANT, DO NOT FORGET TO PUT THIS HERE!!!!! -->
         <mapping class="org.ezcampus.search.hibernate.entity.Word" />
+        <mapping class="org.ezcampus.search.hibernate.entity.WordMap" />
     </session-factory>
-</hibernate-configuration>

@@ -1,6 +1,5 @@
 package org.ezcampus.search.hibernate;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.ezcampus.search.System.ResourceLoader;

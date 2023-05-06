@@ -43,12 +43,12 @@ public class Word
 		this.wordId = id;
 	}
 
-	public String getFirstName()
+	public String getWordString()
 	{
 		return word;
 	}
 
-	public void setFirstName(String word)
+	public void setWordString(String word)
 	{
 		this.word = word;
 	}

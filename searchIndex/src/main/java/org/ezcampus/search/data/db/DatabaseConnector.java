@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
+import org.ezcampus.search.data.StringHelper;
 import org.tinylog.Logger;
 
 public abstract class DatabaseConnector
@@ -20,6 +22,8 @@ public abstract class DatabaseConnector
 	protected String password;
 
 	protected String databaseName = "master";
+
+	protected HashMap<String, String> queryParams = new HashMap<>();
 
 	protected DatabaseConnector(String JDBC_PROTOCOL)
 	{
@@ -51,6 +55,35 @@ public abstract class DatabaseConnector
 	{
 		return String.format("jdbc:%s://%s:%d/", JDBC_PROTOCOL, domain, port);
 	}
+	
+	public String getConnectionURI(String database)
+	{
+		if (queryParams.size() > 0)
+			return 
+					String.format("%s?%s", getURI() + database, StringHelper.urlEncodeUTF8(queryParams));
+
+		return this.getURI() + database;
+	}
+	
+	public String getConnectionURI()
+	{
+		return this.getConnectionURI(this.databaseName);
+	}
+	
+	
+
+	public void setURIPathQuery(String key, String value)
+	{
+		if (value == null)
+		{
+			if (queryParams.containsKey(key))
+			{
+				queryParams.remove(key);
+			}
+		}
+
+		queryParams.put(key, value);
+	}
 
 	/**
 	 * Connect to the database
@@ -71,7 +104,7 @@ public abstract class DatabaseConnector
 	 */
 	public Connection getConnection(String database) throws SQLException
 	{
-		return DriverManager.getConnection(this.getURI() + database, username, password);
+		return DriverManager.getConnection(this.getConnectionURI(database), username, password);
 	}
 
 	/**

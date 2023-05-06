@@ -24,14 +24,16 @@ public class Database
 	
 	public static void init() 
 	{
-		if(connector != null)return;
-		
+		if(connector != null)
+			return;
 
 		connector = new MySQLConnector();
 		connector.checkJDBCDriver();
 		connector.databaseName = "hibernate_db";
 		connector.username = "test";
 		connector.password = "root";
+		connector.setURIPathQuery("useSSL", "false");
+		Logger.info("Database Connection URL: {}", connector.getConnectionURI());
 	}
 
 	// DEBUG ONLY
@@ -43,13 +45,9 @@ public class Database
 		GlobalSettings.IS_DEBUG = true;
 		Logger.info("Running as debug: {}", GlobalSettings.IS_DEBUG);
 
-		connector = new MySQLConnector();
-		connector.checkJDBCDriver();
-		connector.databaseName = "hibernate_db";
-		connector.username = "test";
-		connector.password = "root";
-
-		Connection c = connector.getConnection("hibernate_db");
+		init();
+		
+		Connection c = connector.getConnection();
 
 		final String SQL = "SELECT * FROM tbl_word LIMIT 200";
 

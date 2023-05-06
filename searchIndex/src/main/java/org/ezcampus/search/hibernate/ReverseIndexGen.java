@@ -8,6 +8,7 @@ import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.Term;
+import org.ezcampus.search.hibernate.entity.WordDAO;
 import org.ezcampus.search.hibernate.util.SessionUtil;
 import org.ezcampus.search.hibernate.util.WordSearchBuilder;
 import org.hibernate.Session;
@@ -19,6 +20,9 @@ public class ReverseIndexGen {
 
 		System.out.println("Running Reverse Index Gen: ");
 
+		//Testing the DAO
+		System.out.println(WordDAO.getWord("12345"));
+		
 		// Step 1.
 
 		// Open Hibernate Session

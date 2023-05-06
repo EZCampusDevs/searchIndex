@@ -1,4 +1,4 @@
-package org.ezcampus.search.endpoints;
+package org.ezcampus.search.rest;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -14,6 +14,7 @@ import java.util.List;
 import org.ezcampus.search.hibernate.entity.ClassType;
 import org.ezcampus.search.hibernate.entity.Term;
 import org.ezcampus.search.hibernate.entity.Word;
+import org.ezcampus.search.hibernate.entity.WordDAO;
 import org.ezcampus.search.hibernate.util.SessionUtil;
 import org.hibernate.Session;
 
@@ -33,23 +34,17 @@ public class Search {
             @QueryParam("results_per_page") int resultsPerPage
     ) 
     {
-        
-		try (Session session = SessionUtil.getSessionFactory().openSession())
-		{	
-			
-			List<Word> words = session.createQuery("FROM Word", Word.class).list();
-			for (Word word : words)
-			{
-				System.out.println(word);
-			}
-				
-		}
+       try {
+    	   return Response.status(Response.Status.OK).entity(
+    			   WordDAO.getWord("12345")
+    			   ).build();
+       } catch (NullPointerException e) {
+           return Response.status(Response.Status.NOT_FOUND).entity(
+                   "not found"
+           ).build();  
+       }
     	
-    	
-        return Response
-                .status(200) //Status always first! Builds 200 Response
-              //  .entity(jsonString) //Add JSON body
-                .build(); 
+    
                
     }
     

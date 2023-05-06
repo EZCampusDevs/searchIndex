@@ -85,6 +85,12 @@
 			<version>2.14.1</version>
 		</dependency>
                 
+        <!-- Adding jersey -->
+        <dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-server</artifactId>
+    <version>3.0.3</version>
+		</dependency>
                 
 	</dependencies>
 

@@ -84,5 +84,9 @@ public class Meeting {
     private String meetingScheduleType;
 
     // Getters and setters omitted for brevity
+    public String getBuildingDescription() {
+        return this.buildingDescription;
+    }
+
 }
 

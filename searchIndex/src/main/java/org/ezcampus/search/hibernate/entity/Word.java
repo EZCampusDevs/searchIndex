@@ -1,5 +1,7 @@
 package org.ezcampus.search.hibernate.entity;
 
+import org.hibernate.annotations.NaturalId;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +19,7 @@ public class Word
 	@Column(name = "word_id")
 	private int wordId;
 
+    @NaturalId
 	@Column(name = "word", unique=true)
 	private String word;
 

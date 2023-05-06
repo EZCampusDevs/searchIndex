@@ -27,15 +27,17 @@ public class WordMap {
     @Column(name = "count")
     private int count;
 
-    @Column(name = "course_id")
-    private String courseId;
+    
+    @ManyToOne
+    @JoinColumn(name = "course_data_id")
+    private CourseData courseDataId;
 
     public WordMap() {}
 
-    public WordMap(Word word, int count, String courseId) {
+    public WordMap(Word word, int count, CourseData courseDataId) {
         this.word = word;
         this.count = count;
-        this.courseId = courseId;
+        this.courseDataId = courseDataId;
     }
 
     public Long getId() {
@@ -62,11 +64,4 @@ public class WordMap {
         this.count = count;
     }
 
-    public String getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(String courseId) {
-        this.courseId = courseId;
-    }
 }

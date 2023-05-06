@@ -83,9 +83,8 @@ public class ReverseIndexGen {
 					
 					//TODO: Professor of Course Data (1 CRN can only have 1 prof, so this value is STR)
 					
-					WordSearchBuilder build = new WordSearchBuilder(cId, searchStrings, session);
+					WordSearchBuilder build = new WordSearchBuilder(cD, searchStrings, session);
 					
-
 					System.out.println(cD.getCourseDataId());
 				}
 			}

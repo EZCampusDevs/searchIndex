@@ -8,16 +8,45 @@ import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.Term;
+import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.entity.WordDAO;
 import org.ezcampus.search.hibernate.util.SessionUtil;
 import org.ezcampus.search.hibernate.util.WordSearchBuilder;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class ReverseIndexGen {
+	
+	
+	public static void test ()
+	{
+		try (Session session = SessionUtil.getSessionFactory().openSession()) 
+		{
+			Transaction tx = session.getTransaction();
+			
+			tx.begin();
+			
+			session.persist(new Word("nyah"));
+			session.persist(new Word("nyah1"));
+			
+			session.persist(new Word("hello"));
+			
+			session.persist(new Word("uwu"));
+			session.persist(new Word("what"));
+			session.persist(new Word("test"));
+			
+			tx.commit();
+			// Get all Terms, Class types & courses:
+		}
+	}
+	
 
 	public static void main(String[] args) {
 		ResourceLoader.loadTinyLogConfig();
 
+		test();
+		if(false) {
+		
 		System.out.println("Running Reverse Index Gen: ");
 
 		//Testing the DAO
@@ -94,4 +123,4 @@ public class ReverseIndexGen {
 			}
 		}
 	}
-}
+}}

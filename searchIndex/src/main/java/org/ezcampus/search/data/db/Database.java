@@ -14,6 +14,25 @@ public class Database
 {
 
 	public static DatabaseConnector connector;
+	
+	public static Connection getConnection() throws SQLException 
+	{
+		init();
+		Connection c = connector.getConnection();
+		return c;
+	}
+	
+	public static void init() 
+	{
+		if(connector != null)return;
+		
+
+		connector = new MySQLConnector();
+		connector.checkJDBCDriver();
+		connector.databaseName = "hibernate_db";
+		connector.username = "test";
+		connector.password = "root";
+	}
 
 	// DEBUG ONLY
 	public static void main(String args[]) throws IOException, InterruptedException, SQLException

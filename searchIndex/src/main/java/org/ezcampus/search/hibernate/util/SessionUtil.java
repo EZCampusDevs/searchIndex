@@ -2,11 +2,14 @@ package org.ezcampus.search.hibernate.util;
 
 
 
+import java.io.File;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.tinylog.Logger;
 
 public class SessionUtil
@@ -16,12 +19,19 @@ public class SessionUtil
 
 	public static SessionFactory getSessionFactory()
 	{
+		final String CONFIG_PATH = "hibernate.cfg.xml";
+		
+		Logger.debug("Config path {} exists: {}", CONFIG_PATH, new File(CONFIG_PATH).exists());
+		
 		if (sessionFactory == null)
 		{
 			try
 			{
+				
+//			    Configuration cfg = new Configuration().addResource("hibernate.cfg.xml")  ;
+//			    Logger.debug("Config created? {}", cfg);
 				// Create registry
-				registry = new StandardServiceRegistryBuilder().configure().build();
+				registry = new StandardServiceRegistryBuilder().configure(CONFIG_PATH).build();
 
 				// Create MetadataSources
 				MetadataSources sources = new MetadataSources(registry);

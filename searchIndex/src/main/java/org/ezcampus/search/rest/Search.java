@@ -31,7 +31,8 @@ public class Search
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getRequestBody(
-			@QueryParam("search_term") String searchTerm, @QueryParam("page") int page,
+			@QueryParam("search_term") String searchTerm, 
+			@QueryParam("page") int page,
 			@QueryParam("results_per_page") int resultsPerPage
 	)
 	{
@@ -78,10 +79,11 @@ public class Search
 
 	
 	@GET
-	@Path("2")
+	@Path("orm")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getRequestBody2(
-			@QueryParam("search_term") String searchTerm, @QueryParam("page") int page,
+			@QueryParam("search_term") String searchTerm, 
+			@QueryParam("page") int page,
 			@QueryParam("results_per_page") int resultsPerPage
 	)
 	{
@@ -103,8 +105,6 @@ public class Search
 			
 			return Response.status(Response.Status.OK).entity(a).build();
 		}
-		
-		
 		
 		
 //		return Response.status(Response.Status.NOT_FOUND).entity("not found").build();

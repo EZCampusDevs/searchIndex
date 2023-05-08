@@ -16,42 +16,15 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class ReverseIndexGen {
-	
-	
-	public static void test ()
-	{
-		try (Session session = SessionUtil.getSessionFactory().openSession()) 
-		{
-			Transaction tx = session.getTransaction();
-			
-			tx.begin();
-			
-			session.persist(new Word("nyah"));
-			session.persist(new Word("nyah1"));
-			
-			session.persist(new Word("hello"));
-			
-			session.persist(new Word("uwu"));
-			session.persist(new Word("what"));
-			session.persist(new Word("test"));
-			
-			tx.commit();
-			// Get all Terms, Class types & courses:
-		}
-	}
-	
 
 	public static void main(String[] args) {
 		ResourceLoader.loadTinyLogConfig();
 
-		test();
-		if(false) {
-		
 		System.out.println("Running Reverse Index Gen: ");
 
-		//Testing the DAO
+		// Testing the DAO
 		System.out.println(WordDAO.getWord("12345"));
-		
+
 		// Step 1.
 
 		// Open Hibernate Session
@@ -74,7 +47,7 @@ public class ReverseIndexGen {
 
 				// Course Code
 				String cc = course.getCourseCode();
-				
+
 				for (CourseData cD : courseDatas) {
 
 					int cId = cD.getCourseDataId();
@@ -85,42 +58,41 @@ public class ReverseIndexGen {
 					String crn = cD.getCrn();
 					// Class Type (LEC, LAB, TUT)
 					String classType = cD.getClassType();
-					
-				
+
 					ArrayList<String> searchStrings = new ArrayList<>();
 
 					// Meeting Location(s) -> All meetings with matching course data id
-						
-					List<Meeting> meetings = session.createQuery(
-					    "FROM Meeting m WHERE m.courseDataId.courseDataId = :cId",
-					    Meeting.class
-					).setParameter("cId", cId).list(); 
 
-					//Put all unique search strings into searchWords
-					
+					List<Meeting> meetings = session
+							.createQuery("FROM Meeting m WHERE m.courseDataId.courseDataId = :cId", Meeting.class)
+							.setParameter("cId", cId).list();
+
+					// Put all unique search strings into searchWords
+
 					for (Meeting meeting : meetings) {
-						
+
 						String building = meeting.getBuildingDescription();
-					    
-					    if (!searchStrings.contains(building) && building != null) {
-					        searchStrings.add(building);
-					    }
+
+						if (!searchStrings.contains(building) && building != null) {
+							searchStrings.add(building);
+						}
 					}
 
 					// Course Code
-					searchStrings.add( course.getCourseCode() );
+					searchStrings.add(course.getCourseCode());
 					// CRN or Course Number
-					searchStrings.add( cD.getCrn() );
+					searchStrings.add(cD.getCrn());
 					// Class Type (LEC, LAB, TUT)
-					searchStrings.add( cD.getClassType() );
-					
-					//TODO: Professor of Course Data (1 CRN can only have 1 prof, so this value is STR)
-					
+					searchStrings.add(cD.getClassType());
+
+					// TODO: Professor of Course Data (1 CRN can only have 1 prof, so this value is
+					// STR)
+
 					WordSearchBuilder build = new WordSearchBuilder(cD, searchStrings, session);
-					
+
 					System.out.println(cD.getCourseDataId());
 				}
 			}
 		}
 	}
-}}
+}

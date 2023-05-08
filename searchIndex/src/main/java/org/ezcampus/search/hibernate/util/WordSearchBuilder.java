@@ -50,6 +50,7 @@ public class WordSearchBuilder {
 			Transaction tx = null;
 			try {
 				tx = session.beginTransaction();
+				
 				for (String entry : wordList) {
 
 					// Check if the word already exists in the database

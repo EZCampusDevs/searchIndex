@@ -33,6 +33,7 @@ public class Database
 		connector.username = "test";
 		connector.password = "root";
 		connector.setURIPathQuery("useSSL", "false");
+		connector.setURIPathQuery("allowPublicKeyRetrieval", "true");
 		Logger.info("Database Connection URL: {}", connector.getConnectionURI());
 	}
 

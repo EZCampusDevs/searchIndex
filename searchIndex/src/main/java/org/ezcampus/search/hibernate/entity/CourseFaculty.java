@@ -14,20 +14,31 @@ import jakarta.persistence.Table;
 @Table(name = "tbl_course_faculty")
 public class CourseFaculty {
 
-	//Many Profs can teach 1 CRN ; Many Course_Data_Id's in Course Faculty that map's to 1 Course_data row
-	
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "course_faculty_id")
-    private Integer courseFacultyId;
-	
-    @ManyToOne
-    @JoinColumn(name = "course_data_id")
-    private CourseData courseDataId;
+	  @Id
+	    @ManyToOne
+	    @JoinColumn(name = "course_data_id", referencedColumnName = "course_data_id")
+	    private CourseData courseDataId;
 
+	    @Id
+	    @ManyToOne
+	    @JoinColumn(name = "faculty_id", referencedColumnName = "faculty_id")
+	    private Faculty facultyId;
+	    
+	    // getters and setters omitted for brevity
+	    public CourseData getCourseDataId() {
+	        return this.courseDataId;
+	    }
 
-    @ManyToOne
-    @JoinColumn(name = "faculty_id", referencedColumnName = "faculty_id", insertable = false)
-    private Faculty faculty;
+	    public void setCourseDataId(CourseData courseDataId) {
+	        this.courseDataId = courseDataId;
+	    }
+
+	    public Faculty getFacultyId() {
+	        return this.facultyId;
+	    }
+
+	    public void setFacultyId(Faculty facultyId) {
+	        this.facultyId = facultyId;
+	    }
 
 }

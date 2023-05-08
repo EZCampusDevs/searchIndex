@@ -46,7 +46,7 @@ public class WordSearchBuilder {
 
 	private void buildWords() {
 
-		try (Session session = SessionUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			Transaction tx = null;
 			try {
 				tx = session.beginTransaction();

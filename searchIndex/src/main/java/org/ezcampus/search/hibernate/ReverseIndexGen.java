@@ -4,20 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcampus.search.System.ResourceLoader;
+import org.ezcampus.search.data.DatabaseProcessing;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.Meeting;
+import org.ezcampus.search.hibernate.entity.ScrapeHistory;
+import org.ezcampus.search.hibernate.entity.ScrapeHistoryDAO;
 import org.ezcampus.search.hibernate.entity.Term;
-import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.entity.WordDAO;
-import org.ezcampus.search.hibernate.util.SessionUtil;
+import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.ezcampus.search.hibernate.util.WordSearchBuilder;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.tinylog.Logger;
 
-public class ReverseIndexGen {
+public class ReverseIndexGen
+{
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		ResourceLoader.loadTinyLogConfig();
 
 		System.out.println("Running Reverse Index Gen: ");
@@ -25,10 +29,34 @@ public class ReverseIndexGen {
 		// Testing the DAO
 		System.out.println(WordDAO.getWord("12345"));
 
+		
+		int i = WordDAO.insertWord("hello");
+		
+		Logger.info("inserted word, id was {}", i);
+		
+		
+		DatabaseProcessing.processLastScrape();
+		
+		ScrapeHistory s = ScrapeHistoryDAO.getNewestScrapeHistory();
+
+		if (s == null)
+		{
+			Logger.info("Got NULL");
+		}
+		else
+		{
+			Logger.info(s.toString());
+		}
+
+	}
+
+	public static void other()
+	{
 		// Step 1.
 
 		// Open Hibernate Session
-		try (Session session = SessionUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
 
 			// Get all Terms, Class types & courses:
 
@@ -36,7 +64,8 @@ public class ReverseIndexGen {
 			List<Course> courses = session.createQuery("FROM Course", Course.class).list();
 
 			// For all Courses, get Course_data_ids
-			for (Course course : courses) {
+			for (Course course : courses)
+			{
 
 				int id = course.getCourseId();
 
@@ -48,7 +77,8 @@ public class ReverseIndexGen {
 				// Course Code
 				String cc = course.getCourseCode();
 
-				for (CourseData cD : courseDatas) {
+				for (CourseData cD : courseDatas)
+				{
 
 					int cId = cD.getCourseDataId();
 
@@ -69,11 +99,13 @@ public class ReverseIndexGen {
 
 					// Put all unique search strings into searchWords
 
-					for (Meeting meeting : meetings) {
+					for (Meeting meeting : meetings)
+					{
 
 						String building = meeting.getBuildingDescription();
 
-						if (!searchStrings.contains(building) && building != null) {
+						if (!searchStrings.contains(building) && building != null)
+						{
 							searchStrings.add(building);
 						}
 					}

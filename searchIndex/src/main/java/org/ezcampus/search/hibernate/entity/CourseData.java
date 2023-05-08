@@ -90,6 +90,13 @@ public class CourseData {
 	@JoinColumn(name = "class_type_id", referencedColumnName = "class_type_id")
 	private ClassType classType;
 
+	
+
+    @JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
+    @ManyToOne
+    private ScrapeHistory scrapeId;
+    
+	
 	public Integer getCourseDataId() {
 		return courseDataId;
 	}

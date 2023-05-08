@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.ezcampus.search.data.db.Database;
 import org.ezcampus.search.hibernate.entity.Word;
-import org.ezcampus.search.hibernate.util.SessionUtil;
+import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.Session;
 import org.tinylog.Logger;
 
@@ -91,7 +91,7 @@ public class Search
 		Logger.debug("search function starting");
 
 		
-		try (Session session = SessionUtil.getSessionFactory().openSession()) 
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) 
 		{
 			Logger.debug("In session try statement");
 			

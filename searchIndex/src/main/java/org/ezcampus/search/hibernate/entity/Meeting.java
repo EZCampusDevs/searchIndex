@@ -83,6 +83,7 @@ public class Meeting {
     @Column(name = "meeting_schedule_type")
     private String meetingScheduleType;
 
+
     // Getters and setters omitted for brevity
     public String getBuildingDescription() {
         return this.buildingDescription;

@@ -12,7 +12,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.tinylog.Logger;
 
-public class SessionUtil
+public class HibernateUtil
 {
 	private static StandardServiceRegistry registry;
 	private static SessionFactory sessionFactory;

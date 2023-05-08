@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class Term {
 
     @Id
-    @Column(name = "term_id")
+    @Column(name = "term_id", nullable = false)
     private Integer termId;
 
     @Column(name = "term_description")

@@ -3,9 +3,23 @@ package org.ezcampus.search.data;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class StringHelper
 {
+
+	public static String cleanWord(String word)
+	{
+		String trimmedWord = word.trim().toLowerCase();
+
+		final String REGEX = "[^a-z0-9']+";
+		
+		// Replace non-alphanumeric characters except apostrophe with empty string
+		String cleanedWord = Pattern.compile(REGEX).matcher(trimmedWord).replaceAll("");
+
+		return cleanedWord;
+	}
+
 	public static String urlEncodeUTF8(String s)
 	{
 		try

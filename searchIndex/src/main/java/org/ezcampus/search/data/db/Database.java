@@ -29,8 +29,8 @@ public class Database
 
 		connector = new MySQLConnector();
 		connector.checkJDBCDriver();
-		connector.databaseName = "hibernate_db";
-		connector.username = "test";
+		connector.databaseName = "search_db";
+		connector.username = "root";
 		connector.password = "root";
 		connector.setURIPathQuery("useSSL", "false");
 		connector.setURIPathQuery("allowPublicKeyRetrieval", "true");

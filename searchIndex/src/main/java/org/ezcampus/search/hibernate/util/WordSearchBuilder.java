@@ -1,6 +1,7 @@
 package org.ezcampus.search.hibernate.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.Word;
@@ -22,7 +23,16 @@ public class WordSearchBuilder {
 		ArrayList<String> cleanedEntries = new ArrayList<>();
 		for (String entry : entries) {
 			if (entry != null) {
-				cleanedEntries.add(entry);
+	            // Split the entry by spaces
+	            String[] words = entry.split(" ");
+
+	            // Remove commas, dots, and at signs from each word
+	            for (int i = 0; i < words.length; i++) {
+	                words[i] = words[i].replaceAll("[,.@]", "");
+	            }
+
+	            // Append cleaned words to cleanedEntries
+	            cleanedEntries.addAll(Arrays.asList(words));
 			}
 		}
 		return cleanedEntries;
@@ -82,7 +92,9 @@ public class WordSearchBuilder {
 
 					//
 				}
+				
 				tx.commit();
+				
 			} catch (HibernateException e) {
 				if (tx != null) {
 					tx.rollback();

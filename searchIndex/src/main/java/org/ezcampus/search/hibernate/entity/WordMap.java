@@ -44,7 +44,7 @@ public class WordMap {
     }
     
     public CourseData getCourseData() {
-    	return courseDataId;
+    	return courseData;
     }
 
     public void setWord(Word word) {
@@ -54,10 +54,7 @@ public class WordMap {
     public void setCourseData(CourseData cd) {
     	this.courseData = cd;
     }
-    
-    public CourseData getCourseData() {
-    	return this.courseData;
-    }
+
 
     public int getCount() {
         return count;

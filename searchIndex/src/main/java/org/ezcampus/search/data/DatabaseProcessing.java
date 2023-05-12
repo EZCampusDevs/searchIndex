@@ -7,6 +7,7 @@ import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Faculty;
+import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entity.ScrapeHistoryDAO;
 import org.ezcampus.search.hibernate.entity.Term;
@@ -84,6 +85,20 @@ public class DatabaseProcessing
 					splitInsertWord(faculty.getInstructorName(), courseData, session);
 				}
 				
+				
+				final String HQL3 = "FROM Meeting m WHERE m.courseDataId = :cId";
+				List<Meeting> meetings = session
+						.createQuery(HQL3, Meeting.class)
+						.setParameter("cId", courseData)
+						.getResultList();
+
+				
+				// Put all unique search strings into searchWords
+				for (Meeting meeting : meetings)
+				{
+					splitInsertWord(meeting.getBuildingDescription(), courseData, session);
+				}
+				
 				splitInsertWord(courseData.getCourseTitle(), courseData, session);
 				splitInsertWord(courseData.getSubjectLong(), courseData, session);
 				splitInsertWord(courseData.getSubject(), courseData, session);
@@ -92,7 +107,7 @@ public class DatabaseProcessing
 			}
 		}
 
-//		ScrapeHistoryDAO.setIndexById(lastScrape.getScrapeId(), true);
+		ScrapeHistoryDAO.setHasBeenIndexedById(lastScrape.getScrapeId(), true);
 		return;
 	}
 }

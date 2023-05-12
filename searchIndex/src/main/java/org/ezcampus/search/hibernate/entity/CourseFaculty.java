@@ -33,7 +33,7 @@ public class CourseFaculty {
 	        this.courseDataId = courseDataId;
 	    }
 
-	    public Faculty getFacultyId() {
+	    public Faculty getFaculty() {
 	        return this.facultyId;
 	    }
 

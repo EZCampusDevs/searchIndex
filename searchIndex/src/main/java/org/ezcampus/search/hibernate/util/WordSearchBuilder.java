@@ -73,7 +73,7 @@ public class WordSearchBuilder {
 
 						// At this point we know there are no Records for `WordMap` associated with newWord
 
-						WordMap wM = new WordMap(newWord, 1, courseData);
+						WordMap wM = new WordMap(newWord, courseData, 1);
 						session.persist(wM); // Persist Word Map associated to new Word & Course Data Id
 
 					} else { // Word already exists
@@ -85,7 +85,7 @@ public class WordSearchBuilder {
 
 						//Create `WordMap` record for existingWord if it doesn't already have one
 						if (existingWordMap == null) {
-							WordMap wM = new WordMap(existingWord, 1, courseData);
+							WordMap wM = new WordMap(existingWord, courseData, 1);
 							session.persist(wM); 
 						}
 					}

@@ -95,7 +95,11 @@ public class CourseData {
     @JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
     @ManyToOne
     private ScrapeHistory scrapeId;
+   
     
+    public Course getCourse () {
+    	return this.course;
+    }
 	
 	public Integer getCourseDataId() {
 		return courseDataId;
@@ -159,6 +163,10 @@ public class CourseData {
 
 	public void setCampusDescription(String campusDescription) {
 		this.campusDescription = campusDescription;
+	}
+	
+	public String getInstructionalMethodDescription() {
+		return this.instructionalMethodDescription;
 	}
 
 	public Integer getCreditHours() {

@@ -18,7 +18,7 @@ public class ScrapeHistoryDAO
 	}
 
 	
-	public static void setIndexById(int scrapeId, boolean hasBeenIndex) 
+	public static void setHasBeenIndexedById(int scrapeId, boolean hasBeenIndex) 
 	{
 		 try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 		        ScrapeHistory scrapeHistory = session.get(ScrapeHistory.class, scrapeId);

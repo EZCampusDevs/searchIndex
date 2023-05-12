@@ -47,33 +47,31 @@ public class WordDAO
 		return w.getId();
 	}
 
-	public static int insertWord(String wordString)
+	public static Word insertWord(String wordString, Session session)
 	{
-		if(wordString == null) return -1;
+		if(wordString == null) return null;
 		String cleaned = StringHelper.cleanWord(wordString);
 		
-		if (cleaned.isEmpty()) return -1;
+		if (cleaned.isEmpty()) return null;
 		
 		
 		Transaction tx = null;
-		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		try
 		{
-			tx = session.beginTransaction();
-
 			// Check if the word already exists in the database
-			Word existingWord = session.byNaturalId(Word.class).using("word", wordString).load();
+			Word existingWord = session.byNaturalId(Word.class).using("word", cleaned).load();
 			if (existingWord != null)
 			{
-				return existingWord.getId();
+				return existingWord;
 			}
+
+			tx = session.beginTransaction();
 
 			Word newWord = new Word(cleaned);
             session.persist(newWord);
-            int id = newWord.getId();
-
 			tx.commit();
 
-			return id;
+			return newWord;
 		}
 		catch (HibernateException e)
 		{
@@ -90,5 +88,18 @@ public class WordDAO
 	public static void linkWord(int wordId, int courseDataId)
 	{
 
+	}
+	
+	
+	public static void insertLinkWord(String wordString, CourseData courseData, Session session) 
+	{
+		Word word = insertWord(wordString, session);
+		
+		if(word == null) {
+			Logger.debug("Cannot insertLinkWord because word {} was null after inserting", wordString);
+			return;
+		}
+		
+		WordMapDAO.insertMap(word, courseData, session);
 	}
 }

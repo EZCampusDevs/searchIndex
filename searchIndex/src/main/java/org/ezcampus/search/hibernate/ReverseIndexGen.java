@@ -88,7 +88,7 @@ public class ReverseIndexGen
 					
 					for(CourseFaculty cF : cfl) {
 						
-						Faculty facId = cF.getFacultyId();
+						Faculty facId = cF.getFaculty();
 						searchStrings.add(facId.getInstructorName());
 							
 					}

@@ -42,6 +42,10 @@ public class WordMap {
     public Word getWord() {
         return word;
     }
+    
+    public CourseData getCourseData() {
+    	return courseDataId;
+    }
 
     public void setWord(Word word) {
         this.word = word;

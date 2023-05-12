@@ -17,10 +17,35 @@ public class CourseDataResult {
 	CourseData courseData;
 	List<CourseFaculty> courseFac;
 
+	public void Print() {
+		
+		System.out.println("*****************************************");
+		
+		System.out.println(">> course_data_id: "+courseData.getCourseDataId());
+		System.out.println(">> course_id: "+course.getCourseId());
+		
+		System.out.println("CC: "+course.getCourseCode());
+		System.out.println("CRN: "+courseData.getCrn());
+		System.out.println("Desc: "+course.getCourseDescription());
+		System.out.println("CT: "+courseData.getClassType());
+		
+		for(CourseFaculty e : courseFac) {
+
+			System.out.println("Prof: "+e.getFaculty().getInstructorName());
+			System.out.println("Email: "+e.getFaculty().getInstructorEmail());
+		
+		}
+		
+		System.out.println("Ranking: " + courseData.ranking);
+		
+		System.out.println("*****************************************\n");
+	}
+	
 	
 	public CourseDataResult(Course c, CourseData cd, List<CourseFaculty> cf) {
 		this.course = c;
 		this.courseData = cd;
 		this.courseFac = cf;
 	}
+	
 }

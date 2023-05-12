@@ -41,7 +41,7 @@ public abstract class SearchHandler
 
 					// Get the Course object associated with the CourseData
 				    Course course = courseData.getCourse();
-
+				    
 				    
 				    
 				    // Query the CourseFaculty for the given CourseData
@@ -70,17 +70,13 @@ public abstract class SearchHandler
 	public static void main(String[] args) {
 		
 		
-		ArrayList<CourseData> results = search("Rupinder Brar");
+		ArrayList<CourseData> results = search("jane");
 		
 		ArrayList<CourseDataResult> parsedResults = loadIn(results);
 		
-		for(CourseData entry : results) { 
-			
-			System.out.println(entry.getCrn());
-			System.out.println(entry.getCourseTitle());
-			System.out.println(entry.ranking);
+		for(CourseDataResult entry : parsedResults) { 
+			entry.Print();
 		}
-		
 		
 			
 	}

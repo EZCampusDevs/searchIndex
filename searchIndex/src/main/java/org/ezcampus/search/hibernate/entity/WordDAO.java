@@ -90,6 +90,7 @@ public class WordDAO
 
 	}
 	
+	//Inserts a word, then inserts linked wordMap entry
 	
 	public static void insertLinkWord(String wordString, CourseData courseData, Session session) 
 	{

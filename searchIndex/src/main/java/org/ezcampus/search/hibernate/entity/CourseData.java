@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
@@ -91,14 +92,22 @@ public class CourseData {
 	private ClassType classType;
 
 	
-
     @JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
     @ManyToOne
     private ScrapeHistory scrapeId;
     
+    // Transient makes it invisible to the ORM, but still can be used in instance
+    
+    @Transient
+    public int ranking = 1;
+    
 	
 	public Integer getCourseDataId() {
 		return courseDataId;
+	}
+	
+	public Course getCourse() {
+		return course;
 	}
 
 	public void setCourseDataId(Integer courseDataId) {

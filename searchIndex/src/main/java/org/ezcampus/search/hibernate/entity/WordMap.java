@@ -33,7 +33,7 @@ public class WordMap {
     private CourseData courseDataId;
 
     public WordMap() {}
-
+    
     public WordMap(Word word, int count, CourseData courseDataId) {
         this.word = word;
         this.count = count;
@@ -50,6 +50,10 @@ public class WordMap {
 
     public Word getWord() {
         return word;
+    }
+    
+    public CourseData getCourseData() {
+    	return courseDataId;
     }
 
     public void setWord(Word word) {

@@ -35,10 +35,7 @@ public class Search
 	)
 	{
 
-		Logger.debug("search function starting");
-
-		
-		ArrayList<CourseDataResult> results = SearchHandler.search(searchTerm);
+		ArrayList<CourseDataResult> results = SearchHandler.search(searchTerm, page, resultsPerPage);
 		
         // Convert to JSON array string
         ObjectMapper objectMapper = new ObjectMapper();
@@ -54,7 +51,6 @@ public class Search
 		return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
 
 	}
-
 	
 	@GET
 	@Path("orm")

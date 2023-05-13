@@ -67,8 +67,13 @@ public class DatabaseProcessing
 			List<CourseData> courseData_Course_Term = session.createQuery(HQL1, CourseData.class)
 					.setParameter("sid", lastScrape).getResultList();
 
+			int iteration = 0;
+			
 			for (CourseData courseData : courseData_Course_Term)
 			{
+				
+				System.out.println("At CourseData iteration: "+iteration);
+				
 				Course course = courseData.getCourse();
 				Term term = course.getTerm();
 
@@ -81,8 +86,8 @@ public class DatabaseProcessing
 				for (CourseFaculty courseFaculty : courseFaculty_List)
 				{
 					Faculty faculty = courseFaculty.getFaculty();
-
 					splitInsertWord(faculty.getInstructorName(), courseData, session);
+					
 				}
 				
 				
@@ -104,10 +109,14 @@ public class DatabaseProcessing
 				splitInsertWord(courseData.getSubject(), courseData, session);
 				splitInsertWord(courseData.getCampusDescription(), courseData, session);
 				splitInsertWord(courseData.getInstructionalMethodDescription(), courseData, session);
+				
+				iteration++;
 			}
 		}
 
-		ScrapeHistoryDAO.setHasBeenIndexedById(lastScrape.getScrapeId(), true);
+//		ScrapeHistoryDAO.setIndexById(lastScrape.getScrapeId(), true);
+		
+		Logger.info("Word & Word Map | Tables Loaded-in. Successfully Completed !");
 		return;
 	}
 }

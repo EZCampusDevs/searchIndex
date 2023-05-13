@@ -160,6 +160,38 @@ Command deploy executed successfully.
 
 <hr/>
 
+#### Useful DB MySQL Scripts:
+
+Docker CLI enter container & enter MySQL:
+
+```
+docker exec -it mysql-instance bash
+mysql -u max -p
+**ENTER PASS**
+```
+
+Clearing all SearchIndex related tables in MySQL:
+
+```mysql
+use search_db;
+
+SET FOREIGN_KEY_CHECKS = 0;
+Truncate tbl_classtype;
+Truncate tbl_course;
+Truncate tbl_course_data;
+Truncate tbl_course_faculty;
+Truncate tbl_faculty;
+Truncate tbl_meeting;
+Truncate tbl_scrape_history;
+Truncate tbl_term;
+Truncate tbl_word;
+Truncate tbl_word_course_data;
+SET FOREIGN_KEY_CHECKS = 1;
+```
+
+
+
+
 ##### Setting up IntelliJ 
 
 This will be used for running the glassfish server/api

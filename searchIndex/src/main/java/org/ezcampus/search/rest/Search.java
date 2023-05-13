@@ -1,18 +1,16 @@
 package org.ezcampus.search.rest;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.ezcampus.search.data.db.Database;
+import org.ezcampus.search.core.CourseDataResult;
+import org.ezcampus.search.core.SearchHandler;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.Session;
 import org.tinylog.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.GET;
@@ -39,39 +37,19 @@ public class Search
 
 		Logger.debug("search function starting");
 
-		try
-		{
-
-			try (Connection c = Database.getConnection())
-			{
-				final String SQL = "SELECT * FROM tbl_word";
-
-				try (PreparedStatement pstmt = c.prepareStatement(SQL))
-				{
-					ResultSet rs = pstmt.executeQuery();
-
-					List<String> existingWord = new LinkedList<>();
-					
-					while(rs.next()) 
-					{
-						existingWord.add(rs.getString(2));
-					}
-					
-					existingWord.forEach(x -> {
-						Logger.info(x);
-					});
-					
-					String a = String.join(", ", existingWord);
-					
-					return Response.status(Response.Status.OK).entity(a).build();
-					
-				}
-			}
-		}
-		catch (SQLException e)
-		{
-			Logger.error(e);
-		}
+		
+		ArrayList<CourseDataResult> results = SearchHandler.search(searchTerm);
+		
+        // Convert to JSON array string
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String jsonArray = objectMapper.writeValueAsString(results);
+            
+            return Response.status(Response.Status.OK).entity(jsonArray).build(); //Response with 200 OK and data (search results)
+            		
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
 		return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
 

@@ -70,11 +70,9 @@ public abstract class SearchHandler
 	public static void main(String[] args) {
 		
 		
-		ArrayList<CourseData> results = search("jane");
+		ArrayList<CourseDataResult> results = search("physics ibrahim");
 		
-		ArrayList<CourseDataResult> parsedResults = loadIn(results);
-		
-		for(CourseDataResult entry : parsedResults) { 
+		for(CourseDataResult entry : results) { 
 			entry.Print();
 		}
 		
@@ -85,7 +83,7 @@ public abstract class SearchHandler
  	
 	
 	
-	public static ArrayList<CourseData> search(String searchTerm) {
+	public static ArrayList<CourseDataResult> search(String searchTerm) {
 		
 		//Look up in the word index
 		
@@ -138,9 +136,7 @@ public abstract class SearchHandler
 				            relevantCDs.add(courseData);
 				        }
 				    }
-				
 				}
-				
 				
 				results = relevantCDs;
 			} catch (HibernateException e) { if (tx != null) {tx.rollback();} 
@@ -148,7 +144,7 @@ public abstract class SearchHandler
 			}
 		}
 		
-		return results;
+		return loadIn(results);
 		
 		
 	}

@@ -1,9 +1,20 @@
 pipeline { 
     agent any  
+    
+    tools {
+        maven 'maven-instance'
+    }
+    
     stages { 
         stage('Build') { 
             steps { 
-               echo 'This is a minimal pipeline.' 
+                
+                dir("searchIndex") {
+                    sh "mvn --version"
+                    sh "mvn clean package"
+                }
+
+                echo 'This is a minimal pipeline.' 
             }
         }
     }

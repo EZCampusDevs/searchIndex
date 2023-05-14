@@ -4,159 +4,140 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.ezcampus.search.core.models.CourseDataResult;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.entity.WordMap;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.tinylog.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.ws.rs.core.Response;
+public abstract class SearchHandler
+{
+	public static void main(String[] args)
+	{
 
-public abstract class SearchHandler {
+		List<CourseDataResult> results = search("paula", 1, 50);
 
-	public static ArrayList<CourseDataResult> loadIn(ArrayList<CourseData> results) {
+		ObjectMapper objectMapper = new ObjectMapper();
 
-		ArrayList<CourseDataResult> cdr = new ArrayList<>();
+		try
+		{
+			String jsonArray = objectMapper.writeValueAsString(results);
 
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			Transaction tx = null;
-			try {
-				tx = session.beginTransaction();
+			Logger.info("Searhc results json: {}", jsonArray);
+		}
+		catch (JsonProcessingException e)
+		{
+			Logger.error(e);
+		}
+	}
 
-				for (CourseData courseData : results) {
+	public static List<CourseDataResult> loadIn(List<CourseData> results)
+	{
+		ArrayList<CourseDataResult> cdr = new ArrayList<>(results.size());
 
-					// Get the Course object associated with the CourseData
+		if (results.size() == 0)
+			return cdr;
 
-					Course course = courseData.getCourse();
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
+			for (CourseData courseData : results)
+			{
+				Course course = courseData.getCourse();
 
-					// Query the CourseFaculty for the given CourseData
+				List<CourseFaculty> facultyQuery = session
+						.createQuery("SELECT cf FROM CourseFaculty cf WHERE cf.courseDataId = :courseData", CourseFaculty.class)
+						.setParameter("courseData", courseData)
+						.getResultList();
 
-					List<CourseFaculty> facultyQuery = session
-							.createQuery("SELECT cf FROM CourseFaculty cf WHERE cf.courseDataId = :courseData",
-									CourseFaculty.class)
-							.setParameter("courseData", courseData).getResultList();
 
-					// Do whatever you need with the Course and CourseFaculty data
+				CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery);
 
-					CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery);
-
-					cdr.add(combinedEntry);
-				}
-
-			} catch (HibernateException e) {
-				if (tx != null) {
-					tx.rollback();
-				}
-				e.printStackTrace(); // Prevent Damage to Data caused by Hibernate Error
+				cdr.add(combinedEntry);
 			}
-		} // endof main try
+		}
 
 		return cdr;
 	}
 
-	public static void main(String[] args) {
-
-		ArrayList<CourseDataResult> results = search("rupinder", 1, 5);
-
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		try {
-			String jsonArray = objectMapper.writeValueAsString(results);
-
-			System.out.println(jsonArray);
-
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public static ArrayList<CourseDataResult> search(String searchTerm, int page, int resultsPerPage) {
-
-		// Page Offset:
-		int offset = resultsPerPage * (page - 1); // Calculate the offset based on the page number
-
+	public static List<CourseDataResult> search(String searchTerm, int page, int resultsPerPage)
+	{
 		// Look up in the word index
-		ArrayList<CourseData> results = new ArrayList<>();
+		ArrayList<CourseData> relevantCDs = new ArrayList<>();
 
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			Transaction tx = null;
-			try {
-				tx = session.beginTransaction();
+		if (searchTerm == null)
+			return loadIn(relevantCDs);
 
-				// All words in the `Word` table should be unique, therefore a Unique Result
-				// whilst querying for the Word
+		// Calculate the offset based on the page number
+		int pageoffset = resultsPerPage * (page - 1);
 
-				ArrayList<CourseData> relevantCDs = new ArrayList(); // Relevant results
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
 
-				String[] searchTerms = Arrays.stream(searchTerm.split(" ")) // Split the searchTerm into an array of
-																			// words
-						.filter(word -> !word.trim().isEmpty()) // Filter out empty strings or strings with only blank
-																// spaces
-						.toArray(String[]::new); // Collect the filtered words back into a new array
+			// All words in the `Word` table should be unique, therefore a Unique Result
+			// whilst querying for the Word
 
-				for (String word : searchTerms) {
+			String[] searchTerms = Arrays.stream(searchTerm.split("\\s+")) // Split the searchTerm into an array of
+																		// words
+					.filter(word -> !word.trim().isEmpty()) // Filter out empty strings or strings with only blank
+															// spaces
+					.toArray(String[]::new); // Collect the filtered words back into a new array
 
-					Word matchingWord = session.createQuery("FROM Word w WHERE w.word = :targetWord", Word.class)
-							.setParameter("targetWord", word)
-							.uniqueResult();
+			for (String word : searchTerms)
+			{
+				Word matchingWord = session.createQuery("FROM Word w WHERE w.word = :targetWord", Word.class)
+						.setParameter("targetWord", word).uniqueResult();
 
-					if (matchingWord == null) {
-						continue;
-					}
-
-					System.out.println("WORD: " + matchingWord.getWordString() + "id: " + matchingWord.getId());
-
-					// .setFirstResult offsets the first result by `offset`, and setMaxResults set's
-					// `resultsPerPage`
-
-					List<WordMap> matchingEntries = session
-							.createQuery("FROM WordMap wm WHERE wm.word = :targetId", WordMap.class)
-							.setParameter("targetId", matchingWord)
-							.setFirstResult(offset)
-							.setMaxResults(resultsPerPage)
-							.list();
-
-					// Add Matching entries into relevant course data list (relevantCDs)
-
-					for (WordMap wordMap : matchingEntries) {
-						CourseData courseData = wordMap.getCourseData();
-
-						boolean isNewEntry = true;
-
-						for (CourseData relevantCD : relevantCDs) {
-							if (relevantCD.equals(courseData)) {
-								relevantCD.ranking += 1;
-								isNewEntry = false;
-								break;
-							}
-						}
-
-						if (isNewEntry) {
-							relevantCDs.add(courseData);
-						}
-					}
-					//
+				if (matchingWord == null)
+				{
+					continue;
 				}
 
-				results = relevantCDs;
-			} catch (HibernateException e) {
-				if (tx != null) {
-					tx.rollback();
+				Logger.debug("WORD: {} ID: {}", matchingWord.getWordString(), matchingWord.getId());
+
+				// .setFirstResult offsets the first result by `offset`, and setMaxResults set's
+				// `resultsPerPage`
+
+				List<WordMap> matchingEntries = session
+						.createQuery("FROM WordMap wm WHERE wm.word = :targetId", WordMap.class)
+						.setParameter("targetId", matchingWord)
+						.setFirstResult(pageoffset)
+						.setMaxResults(resultsPerPage)
+						.list();
+
+				// Add Matching entries into relevant course data list (relevantCDs)
+
+				for (WordMap wordMap : matchingEntries)
+				{
+					CourseData courseData = wordMap.getCourseData();
+
+					boolean isNewEntry = true;
+					
+					for (CourseData relevantCD : relevantCDs)
+					{
+						if (relevantCD.equals(courseData))
+						{
+							relevantCD.ranking += 1;
+							isNewEntry = false;
+							break;
+						}
+					}
+
+					if (isNewEntry)
+					{
+						relevantCDs.add(courseData);
+					}
 				}
-				e.printStackTrace(); // Prevent Damage to Data caused by Hibernate Error
 			}
 		}
 
-		return loadIn(results);
+		return loadIn(relevantCDs);
 
 	}
 

@@ -1,9 +1,9 @@
 package org.ezcampus.search.hibernate.entity;
 
-import org.ezcampus.search.data.StringHelper;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.tinylog.Logger;
 
 public class WordMapDAO
@@ -18,6 +18,16 @@ public class WordMapDAO
 		cd.setCourseDataId(courseDataId);
 		
 		insertMap(w, cd, session);
+	}
+	
+	
+	public static void insertMap2(Word word, CourseData courseData, Session session) 
+	{
+		Query<WordMap> query = session.createNamedQuery("insertWordMap", WordMap.class);
+		query.setParameter("word", word);
+		query.setParameter("courseData", courseData);
+		query.setParameter("count", 1); 
+		query.executeUpdate();
 	}
 	
 	

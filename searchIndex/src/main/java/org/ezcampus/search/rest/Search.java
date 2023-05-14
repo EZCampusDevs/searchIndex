@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ezcampus.search.core.CourseDataResult;
 import org.ezcampus.search.core.SearchHandler;
+import org.ezcampus.search.core.models.CourseDataResult;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.ezcampus.search.rest.post.SearchQuery;
@@ -25,50 +25,61 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/search")
-public class Search {
-
+public class Search
+{
 	private final ObjectMapper jsonMap = new ObjectMapper();
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getRequestBody(String jsonPayload) {
-		try {
-
-			SearchQuery requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
-
-			String searchTerm = requestData.getSearchTerm();
-			int page = requestData.getPage();
-			int resultsPerPage = requestData.getResultsPerPage();
-
-			ArrayList<CourseDataResult> results = SearchHandler.search(searchTerm, page, resultsPerPage);
-
-			// Convert to JSON array string
-			try {
-				String jsonArray = jsonMap.writeValueAsString(results);
-
-				return Response.status(Response.Status.OK).entity(jsonArray).build(); // Response with 200 OK and data
-																						// (search results)
-
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-
-			return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
-		} catch (IOException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getRequestBody(String jsonPayload)
+	{
+		SearchQuery requestData;
+		try
+		{
+			requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
 		}
+		catch (IOException e)
+		{
+			Logger.debug(e);
+			return Response.status(Response.Status.BAD_REQUEST)
+					       .entity("Invalid JSON payload")
+					       .build();
+		}
+
+		List<CourseDataResult> results = SearchHandler.search(
+						requestData.getSearchTerm(), 
+						requestData.getPage(), 
+						requestData.getResultsPerPage());
+
+		try
+		{
+			return Response.status(Response.Status.OK)
+					       .entity(jsonMap.writeValueAsString(results))
+					       .build();
+		}
+		catch (JsonProcessingException e)
+		{
+			Logger.warn(e);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					       .entity("Server processing failed")
+					       .build();
+		}		
 	}
 
 	@GET
 	@Path("orm")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getRequestBody2(@QueryParam("search_term") String searchTerm, @QueryParam("page") int page,
-			@QueryParam("results_per_page") int resultsPerPage) {
+	public Response getRequestBody2(
+			@QueryParam("search_term") String searchTerm, @QueryParam("page") int page,
+			@QueryParam("results_per_page") int resultsPerPage
+	)
+	{
 
 		Logger.debug("search function starting");
 
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
 			Logger.debug("In session try statement");
 
 			List<Word> existingWord = session.createQuery("FROM Word ", Word.class).getResultList();

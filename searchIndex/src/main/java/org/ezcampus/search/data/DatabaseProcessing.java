@@ -3,14 +3,12 @@ package org.ezcampus.search.data;
 import java.util.List;
 
 import org.ezcampus.search.System.ResourceLoader;
-import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Faculty;
 import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entity.ScrapeHistoryDAO;
-import org.ezcampus.search.hibernate.entity.Term;
 import org.ezcampus.search.hibernate.entity.WordDAO;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.Session;
@@ -71,11 +69,9 @@ public class DatabaseProcessing
 			
 			for (CourseData courseData : courseData_Course_Term)
 			{
+				Logger.debug("At CourseData iteration: {}", iteration);
 				
-				System.out.println("At CourseData iteration: "+iteration);
-				
-				Course course = courseData.getCourse();
-				Term term = course.getTerm();
+				iteration++;
 
 				final String HQL2 = "FROM CourseFaculty cf WHERE cf.courseDataId = :cId";
 				List<CourseFaculty> courseFaculty_List = session.createQuery(HQL2, CourseFaculty.class)
@@ -109,8 +105,7 @@ public class DatabaseProcessing
 				splitInsertWord(courseData.getSubject(), courseData, session);
 				splitInsertWord(courseData.getCampusDescription(), courseData, session);
 				splitInsertWord(courseData.getInstructionalMethodDescription(), courseData, session);
-				
-				iteration++;
+
 			}
 		}
 

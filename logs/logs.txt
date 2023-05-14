@@ -1,0 +1,28 @@
+[2023-05-06 16:41:40.169] [INFO] TinyLog has initialized!
+[2023-05-06 16:41:40.176] [DEBUG] Config path hibernate.cfg.xml exists: false
+[2023-05-06 16:41:40.597] [ERROR] org.hibernate.internal.util.config.ConfigurationException: Unable to perform unmarshalling at line number 0 and column 0 in RESOURCE hibernate.cfg.xml. Message: null
+	at org.hibernate.boot.cfgxml.internal.JaxbCfgProcessor.unmarshal(JaxbCfgProcessor.java:132)
+	at org.hibernate.boot.cfgxml.internal.JaxbCfgProcessor.unmarshal(JaxbCfgProcessor.java:66)
+	at org.hibernate.boot.cfgxml.internal.ConfigLoader.loadConfigXmlResource(ConfigLoader.java:57)
+	at org.hibernate.boot.registry.StandardServiceRegistryBuilder.configure(StandardServiceRegistryBuilder.java:244)
+	at org.ezcampus.search.hibernate.util.SessionUtil.getSessionFactory(SessionUtil.java:34)
+	at org.ezcampus.search.hibernate.ReverseIndexGen.test(ReverseIndexGen.java:23)
+	at org.ezcampus.search.hibernate.ReverseIndexGen.main(ReverseIndexGen.java:47)
+Caused by: jakarta.xml.bind.UnmarshalException
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallerImpl.handleStreamException(UnmarshallerImpl.java:446)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallerImpl.unmarshal0(UnmarshallerImpl.java:424)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallerImpl.unmarshal(UnmarshallerImpl.java:396)
+	at org.hibernate.boot.cfgxml.internal.JaxbCfgProcessor.unmarshal(JaxbCfgProcessor.java:125)
+	... 6 more
+Caused by: javax.xml.stream.XMLStreamException: ParseError at [row,col]:[8,107]
+Message: The reference to entity "useSSL" must end with the ';' delimiter.
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLStreamReaderImpl.next(XMLStreamReaderImpl.java:652)
+	at java.xml/com.sun.xml.internal.stream.XMLEventReaderImpl.peek(XMLEventReaderImpl.java:277)
+	at java.xml/javax.xml.stream.util.EventReaderDelegate.peek(EventReaderDelegate.java:98)
+	at org.hibernate.boot.cfgxml.internal.JaxbCfgProcessor$NamespaceAddingEventReader.peek(JaxbCfgProcessor.java:250)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.StAXEventConnector.handleCharacters(StAXEventConnector.java:146)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.StAXEventConnector.bridge(StAXEventConnector.java:106)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallerImpl.unmarshal0(UnmarshallerImpl.java:421)
+	... 8 more
+[2023-05-06 16:42:02.013] [INFO] TinyLog has initialized!
+[2023-05-06 16:42:02.017] [DEBUG] Config path hibernate.cfg.xml exists: false

@@ -2,6 +2,7 @@ package org.ezcampus.search.hibernate.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +33,7 @@ public class Faculty {
     private Integer instructorRating;
 
     @JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private ScrapeHistory scrapeId;
     
     public Integer getFacultyId() {

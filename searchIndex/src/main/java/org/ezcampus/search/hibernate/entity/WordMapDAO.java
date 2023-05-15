@@ -19,17 +19,35 @@ public class WordMapDAO
 		
 		insertMap(w, cd, session);
 	}
-	
-	
-	public static void insertMap2(Word word, CourseData courseData, Session session) 
+
+	/**
+	 * Inserts the given mapping, assumes you are already in a transaction
+	 * @param word The word_id 
+	 * @param courseData The course_data_id
+	 * @param session The active database session
+	 */
+	public static void insertMap_NT(Word word, CourseData courseData, Session session) 
 	{
-		Query<WordMap> query = session.createNamedQuery("insertWordMap", WordMap.class);
-		query.setParameter("word", word);
-		query.setParameter("courseData", courseData);
-		query.setParameter("count", 1); 
-		query.executeUpdate();
+		WordMap map = session.createQuery("FROM WordMap m "
+				+ "JOIN FETCH m.word w "
+				+ "JOIN FETCH m.courseData cd "
+				+ "WHERE w = :word AND cd = :cd"
+				, WordMap.class)
+				.setParameter("word", word)
+				.setParameter("cd", courseData)
+				.setMaxResults(1)
+				.getSingleResultOrNull();
+		
+		if(map != null)
+		{
+			map.increaseCountBy(1);
+		}
+		else {
+			map = new WordMap(word, courseData, 1);
+		}
+
+		session.persist(map);
 	}
-	
 	
 	public static void insertMap(Word word, CourseData courseData, Session session) 
 	{

@@ -11,7 +11,9 @@ import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entity.ScrapeHistoryDAO;
 import org.ezcampus.search.hibernate.entity.WordDAO;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.tinylog.Logger;
 
 public class DatabaseProcessing
@@ -40,7 +42,18 @@ public class DatabaseProcessing
 		}
 	}
 
-	public static void processLastScrape()
+	public static void processLastScrape() 
+	{
+		long start = System.nanoTime();
+        
+		_processLastScrape();
+		
+        long stopms = (long) ((System.nanoTime() - start) / 1e6); 
+        
+        Logger.info("Finished indexing after {}ms", stopms);
+	}
+	
+	public static void _processLastScrape()
 	{
 		ScrapeHistory lastScrape = ScrapeHistoryDAO.getNewestScrapeHistory();
 
@@ -58,8 +71,13 @@ public class DatabaseProcessing
 			return;
 		}
 
+		int i = 0;
+		Transaction tx = null;
+		
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
+			tx = session.getTransaction();
+			
 //			final String HQL1 = "SELECT cd, c, t FROM CourseData cd JOIN cd.course c JOIN c.term t";
 			final String HQL1 = "FROM CourseData cd WHERE cd.scrapeId = :sid";
 			List<CourseData> courseData_Course_Term = session.createQuery(HQL1, CourseData.class)
@@ -73,7 +91,7 @@ public class DatabaseProcessing
 				
 				iteration++;
 
-				final String HQL2 = "FROM CourseFaculty cf WHERE cf.courseDataId = :cId";
+				final String HQL2 = "FROM CourseFaculty cf JOIN FETCH cf.faculty WHERE cf.courseDataId = :cId";
 				List<CourseFaculty> courseFaculty_List = session.createQuery(HQL2, CourseFaculty.class)
 						.setParameter("cId", courseData)
 						.getResultList();
@@ -107,9 +125,24 @@ public class DatabaseProcessing
 				splitInsertWord(courseData.getInstructionalMethodDescription(), courseData, session);
 
 			}
+			
+			if(tx.isActive())
+			{
+				tx.commit();
+			}
+		}
+		catch (HibernateException e)
+		{
+			Logger.error(e);
+			
+			if (tx != null && !tx.isActive())
+			{
+				tx.rollback();
+			}
+			throw e;
 		}
 
-//		ScrapeHistoryDAO.setIndexById(lastScrape.getScrapeId(), true);
+		ScrapeHistoryDAO.setHasBeenIndexedById(lastScrape.getScrapeId(), true);
 		
 		Logger.info("Word & Word Map | Tables Loaded-in. Successfully Completed !");
 		return;

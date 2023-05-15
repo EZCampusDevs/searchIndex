@@ -2,6 +2,7 @@ package org.ezcampus.search.hibernate.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,14 +16,14 @@ import jakarta.persistence.Table;
 public class CourseFaculty {
 
 	  @Id
-	    @ManyToOne
+	    @ManyToOne(fetch=FetchType.LAZY)
 	    @JoinColumn(name = "course_data_id", referencedColumnName = "course_data_id")
 	    private CourseData courseDataId;
 
 	    @Id
-	    @ManyToOne
+	    @ManyToOne(fetch=FetchType.LAZY)
 	    @JoinColumn(name = "faculty_id", referencedColumnName = "faculty_id")
-	    private Faculty facultyId;
+	    private Faculty faculty;
 	    
 	    // getters and setters omitted for brevity
 	    public CourseData getCourseDataId() {
@@ -34,11 +35,11 @@ public class CourseFaculty {
 	    }
 
 	    public Faculty getFaculty() {
-	        return this.facultyId;
+	        return this.faculty;
 	    }
 
 	    public void setFacultyId(Faculty facultyId) {
-	        this.facultyId = facultyId;
+	        this.faculty = facultyId;
 	    }
 
 }

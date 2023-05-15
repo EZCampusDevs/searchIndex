@@ -1,8 +1,5 @@
 package org.ezcampus.search.System;
 
-import org.tinylog.Logger;
-
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

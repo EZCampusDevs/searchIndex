@@ -14,6 +14,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
+import nyaa.alice.jviewer.Program.TinylogHandler;
 
 // MAIN ENTRY TO JAVA API PROGRAM
 
@@ -34,7 +35,8 @@ public class Program extends ResourceConfig {
         GlobalSettings.IS_DEBUG = true;
 
         ResourceLoader.loadTinyLogConfig();
-
+        Thread.setDefaultUncaughtExceptionHandler(new TinylogHandler());
+        
         Logger.info("{} starting...", GlobalSettings.BRAND_LONG);
         Logger.info("Running as debug: {}", GlobalSettings.IS_DEBUG);
 

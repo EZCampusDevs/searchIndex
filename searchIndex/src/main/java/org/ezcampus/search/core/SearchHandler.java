@@ -123,7 +123,7 @@ public abstract class SearchHandler
 					{
 						if (relevantCD.equals(courseData))
 						{
-							relevantCD.ranking += 1;
+							relevantCD.ranking += wordMap.getCount();
 							isNewEntry = false;
 							break;
 						}

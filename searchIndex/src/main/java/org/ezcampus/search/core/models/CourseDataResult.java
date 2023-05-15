@@ -162,4 +162,9 @@ public class CourseDataResult
 	{
 		this.ranking = ranking;
 	}
+	
+	
+	public String toString() {
+		return String.format("<CourseDataResult: %s>", this.course_code);
+	}
 }

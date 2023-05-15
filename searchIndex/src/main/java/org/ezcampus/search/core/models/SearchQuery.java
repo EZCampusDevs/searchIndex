@@ -1,4 +1,4 @@
-package org.ezcampus.search.rest.post;
+package org.ezcampus.search.core.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

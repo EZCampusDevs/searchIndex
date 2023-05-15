@@ -1,4 +1,4 @@
-package org.ezcampus.search.rest;
+package org.ezcampus.search.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.ezcampus.search.core.SearchHandler;
 import org.ezcampus.search.core.models.CourseDataResult;
+import org.ezcampus.search.core.models.SearchQuery;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
-import org.ezcampus.search.rest.post.SearchQuery;
 import org.hibernate.Session;
 import org.tinylog.Logger;
 
@@ -47,7 +47,7 @@ public class Search
 					       .build();
 		}
 
-		List<CourseDataResult> results = SearchHandler.search(
+		List<CourseDataResult> results = SearchHandler.searchExactWords(
 						requestData.getSearchTerm(), 
 						requestData.getPage(), 
 						requestData.getResultsPerPage());

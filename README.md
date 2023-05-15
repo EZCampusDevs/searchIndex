@@ -5,6 +5,8 @@
 
 #### Installing JDKs
 
+- https://www.youtube.com/watch?v=BePJ1bBWk3E
+
 - Go to `Manage Jenkins > Plugin Manager > Available Plugins`
 
 - Install [Eclipse Temurin Installer Plugin](https://plugins.jenkins.io/adoptopenjdk)

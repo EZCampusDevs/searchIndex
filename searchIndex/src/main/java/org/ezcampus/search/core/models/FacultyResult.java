@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FacultyResult
 {
 	private String instructorName;
-	private String instrucotorEmail;
+	private String instructorEmail;
 
 	public FacultyResult(String name, String email)
 	{
-		this.instrucotorEmail = email;
+		this.instructorEmail = email;
 		this.instructorName = name;
 	}
 
@@ -27,11 +27,11 @@ public class FacultyResult
 	@JsonProperty("instructor_email")
 	public String getInstructorEmail()
 	{
-		return this.instrucotorEmail;
+		return this.instructorName;
 	}
 
 	public void setInstructorEmail(String value)
 	{
-		this.instrucotorEmail = value;
+		this.instructorEmail = value;
 	}
 }

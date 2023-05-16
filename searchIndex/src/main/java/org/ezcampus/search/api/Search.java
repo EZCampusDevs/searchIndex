@@ -32,40 +32,34 @@ public class Search
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRequestBody(String jsonPayload)
-	{
-		SearchQuery requestData;
-		try
-		{
-			requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
-		}
-		catch (IOException e)
-		{
-			Logger.debug(e);
-			return Response.status(Response.Status.BAD_REQUEST)
-					       .entity("Invalid JSON payload")
-					       .build();
-		}
+	public Response getRequestBody(String jsonPayload) {
+		try {
 
-		List<CourseDataResult> results = SearchHandler.searchExactWords(
-						requestData.getSearchTerm(), 
-						requestData.getPage(), 
-						requestData.getResultsPerPage());
+			SearchQuery requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
 
-		try
-		{
-			return Response.status(Response.Status.OK)
-					       .entity(jsonMap.writeValueAsString(results))
-					       .build();
+			List<CourseDataResult> results = SearchHandler.searchFuzzy(
+					requestData.getSearchTerm(), 
+					requestData.getPage(), 
+					requestData.getResultsPerPage());
+
+			// Convert to JSON array string
+			try {
+				String jsonArray = jsonMap.writeValueAsString(results);
+
+				return Response.status(Response.Status.OK).entity(jsonArray).build(); // Response with 200 OK and data
+																						// (search results)
+
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+
+			return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
+		} catch (IOException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
 		}
-		catch (JsonProcessingException e)
-		{
-			Logger.warn(e);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					       .entity("Server processing failed")
-					       .build();
-		}		
 	}
+	
+
 
 	@GET
 	@Path("orm")

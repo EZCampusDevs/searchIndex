@@ -39,7 +39,7 @@ public class Program extends ResourceConfig {
         Logger.info("Running as debug: {}", GlobalSettings.IS_DEBUG);
 
         // Set the package where the resources are located
-        packages("org.ezcampus.search.rest");
+        packages("org.ezcampus.search.api");
 
         // Enable CORS
         register(CORSFilter.class);

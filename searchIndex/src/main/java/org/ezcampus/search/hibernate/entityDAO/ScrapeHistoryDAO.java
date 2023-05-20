@@ -1,5 +1,6 @@
-package org.ezcampus.search.hibernate.entity;
+package org.ezcampus.search.hibernate.entityDAO;
 
+import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.Session;
 import org.tinylog.Logger;

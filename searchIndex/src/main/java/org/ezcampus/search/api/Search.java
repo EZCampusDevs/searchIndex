@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcampus.search.core.SearchHandler;
-import org.ezcampus.search.core.models.CourseDataResult;
-import org.ezcampus.search.core.models.SearchQuery;
+import org.ezcampus.search.core.models.request.SearchQuery;
+import org.ezcampus.search.core.models.response.CourseDataResult;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.Session;
@@ -37,10 +37,12 @@ public class Search
 
 			SearchQuery requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
 
-			List<CourseDataResult> results = SearchHandler.searchFuzzy(
+			List<CourseDataResult> results = SearchHandler.searchExactWords(
 					requestData.getSearchTerm(), 
 					requestData.getPage(), 
-					requestData.getResultsPerPage());
+					requestData.getResultsPerPage(),
+					requestData.getTerm()
+			);
 
 			// Convert to JSON array string
 			try {
@@ -58,8 +60,6 @@ public class Search
 			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
 		}
 	}
-	
-
 
 	@GET
 	@Path("orm")

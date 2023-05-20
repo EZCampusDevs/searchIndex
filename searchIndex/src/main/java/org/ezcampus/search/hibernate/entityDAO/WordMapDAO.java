@@ -1,5 +1,8 @@
-package org.ezcampus.search.hibernate.entity;
+package org.ezcampus.search.hibernate.entityDAO;
 
+import org.ezcampus.search.hibernate.entity.CourseData;
+import org.ezcampus.search.hibernate.entity.Word;
+import org.ezcampus.search.hibernate.entity.WordMap;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

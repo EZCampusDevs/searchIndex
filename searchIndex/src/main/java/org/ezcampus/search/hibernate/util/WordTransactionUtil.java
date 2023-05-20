@@ -9,7 +9,7 @@ import java.util.Set;
 import org.ezcampus.search.data.StringHelper;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.Word;
-import org.ezcampus.search.hibernate.entity.WordDAO;
+import org.ezcampus.search.hibernate.entityDAO.WordDAO;
 import org.hibernate.Session;
 
 public class WordTransactionUtil

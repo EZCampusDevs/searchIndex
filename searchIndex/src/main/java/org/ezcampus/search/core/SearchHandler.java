@@ -100,7 +100,7 @@ public abstract class SearchHandler
 	}
 	
 	
-	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage)
+	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index
 		ArrayList<CourseData> relevantCDs = new ArrayList<>();
@@ -129,8 +129,10 @@ public abstract class SearchHandler
 						Logger.debug("Found WORD: {} ID: {}", matchingWord.getWordString(), matchingWord.getId());
 						
 						List<WordMap> matchingEntries = session
-								.createQuery("FROM WordMap wm WHERE wm.word = :targetId", WordMap.class)
-								.setParameter("targetId", matchingWord)
+							    .createQuery("FROM WordMap wm WHERE wm.word = :targetId "
+							    		+ "AND wm.courseData.course.term.termId = :termId", WordMap.class)
+							    .setParameter("targetId", matchingWord)
+							    .setParameter("termId", termId)
 						//		.setFirstResult(pageoffset)
 						//		.setMaxResults(resultsPerPage)
 								.list();

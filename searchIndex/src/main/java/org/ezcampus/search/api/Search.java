@@ -37,7 +37,7 @@ public class Search
 
 			SearchQuery requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
 
-			List<CourseDataResult> results = SearchHandler.searchExactWords(
+			List<CourseDataResult> results = SearchHandler.searchFuzzy(
 					requestData.getSearchTerm(), 
 					requestData.getPage(), 
 					requestData.getResultsPerPage(),

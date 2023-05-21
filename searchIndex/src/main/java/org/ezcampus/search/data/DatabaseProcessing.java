@@ -36,6 +36,10 @@ public class DatabaseProcessing
 			{
 				continue;
 			}
+			
+			//Manual Optimization
+			
+			
 
 			Logger.debug("Inserting word link for value '{}'", v);
 			WordDAO.insertLinkWord(v, courseData, session);
@@ -120,10 +124,17 @@ public class DatabaseProcessing
 				
 				splitInsertWord(courseData.getCourseTitle(), courseData, session);
 				splitInsertWord(courseData.getSubjectLong(), courseData, session);
+				
+				splitInsertWord(courseData.getCrn(), courseData, session); 
+				splitInsertWord(courseData.getCourse().getCourseCode(), courseData, session); //Course Code, Math1010U
+				
 				splitInsertWord(courseData.getSubject(), courseData, session);
 				splitInsertWord(courseData.getCampusDescription(), courseData, session);
 				splitInsertWord(courseData.getInstructionalMethodDescription(), courseData, session);
 
+				//TODO: Call more columns here to improve search results
+				
+				
 			}
 			
 			if(tx.isActive())

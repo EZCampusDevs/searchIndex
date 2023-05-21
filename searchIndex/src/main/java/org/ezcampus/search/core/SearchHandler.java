@@ -122,8 +122,7 @@ public abstract class SearchHandler
 							.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
 				            .setParameter("targetWord", "%" + word + "%")
 				            .getResultList();
-
-				
+		
 					for(Word matchingWord : matchingWordList) 
 					{
 						Logger.debug("Found WORD: {} ID: {}", matchingWord.getWordString(), matchingWord.getId());

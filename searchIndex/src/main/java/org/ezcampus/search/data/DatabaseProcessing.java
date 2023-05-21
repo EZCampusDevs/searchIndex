@@ -8,8 +8,8 @@ import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Faculty;
 import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
-import org.ezcampus.search.hibernate.entity.ScrapeHistoryDAO;
-import org.ezcampus.search.hibernate.entity.WordDAO;
+import org.ezcampus.search.hibernate.entityDAO.ScrapeHistoryDAO;
+import org.ezcampus.search.hibernate.entityDAO.WordDAO;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -36,6 +36,10 @@ public class DatabaseProcessing
 			{
 				continue;
 			}
+			
+			//Manual Optimization
+			
+			
 
 			Logger.debug("Inserting word link for value '{}'", v);
 			WordDAO.insertLinkWord(v, courseData, session);
@@ -120,10 +124,17 @@ public class DatabaseProcessing
 				
 				splitInsertWord(courseData.getCourseTitle(), courseData, session);
 				splitInsertWord(courseData.getSubjectLong(), courseData, session);
+				
+				splitInsertWord(courseData.getCrn(), courseData, session); 
+				splitInsertWord(courseData.getCourse().getCourseCode(), courseData, session); //Course Code, Math1010U
+				
 				splitInsertWord(courseData.getSubject(), courseData, session);
 				splitInsertWord(courseData.getCampusDescription(), courseData, session);
 				splitInsertWord(courseData.getInstructionalMethodDescription(), courseData, session);
 
+				//TODO: Call more columns here to improve search results
+				
+				
 			}
 			
 			if(tx.isActive())

@@ -1,8 +1,10 @@
-package org.ezcampus.search.hibernate.entity;
+package org.ezcampus.search.hibernate.entityDAO;
 
 import java.io.Serializable;
 
 import org.ezcampus.search.data.StringHelper;
+import org.ezcampus.search.hibernate.entity.CourseData;
+import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;

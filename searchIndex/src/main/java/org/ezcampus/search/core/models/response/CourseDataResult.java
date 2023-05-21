@@ -1,4 +1,4 @@
-package org.ezcampus.search.core.models;
+package org.ezcampus.search.core.models.response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
+import org.ezcampus.search.hibernate.entity.Meeting;
 import org.tinylog.Logger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,23 +22,35 @@ public class CourseDataResult
 	private String course_crn;
 	private String course_desc;
 	private String class_type;
+	private String course_title;
 
 	private List<FacultyResult> instructors;
-
+	private List<MeetingResult> extra; 
+	
 	// Pagination & Display Order
 	private int ranking;
 
-	public CourseDataResult(Course course, CourseData courseData, List<CourseFaculty> courseFac)
+	public CourseDataResult(Course course, CourseData courseData, List<CourseFaculty> courseFac, List<Meeting> meets)
 	{
-		course_data_id = courseData.getCourseDataId();
+		
+		//Assigning entries from `Course`
+		
 		course_id = course.getCourseId();
-
 		course_code = course.getCourseCode();
-		course_crn = courseData.getCrn();
 		course_desc = course.getCourseDescription();
+		
+		
+		//Assigning entries from `CourseData`
+		
+		course_data_id = courseData.getCourseDataId();
+		course_crn = courseData.getCrn();
 		class_type = courseData.getClassType();
-
+		course_title = courseData.getCourseTitle();
+		
+		
 		ranking = courseData.ranking;
+		
+		//Assigning from list of CourseFaculty (Building FacultyResult objs)
 
 		this.instructors = new ArrayList<>(courseFac.size());
 
@@ -47,7 +60,20 @@ public class CourseDataResult
 					e.getFaculty().getInstructorName(), 
 					e.getFaculty().getInstructorEmail()));
 		}
+		
+		//Assigning from list of Meetings
 
+		this.extra = new ArrayList<>(meets.size());
+		
+		for (Meeting m : meets) 
+		{
+			
+			extra.add(
+					new MeetingResult( m.getBuilding() , 
+							m.getBuildingDescription()));
+			
+		}
+		
 	} 
 
 	public void Print()
@@ -122,6 +148,21 @@ public class CourseDataResult
 	{
 		return ranking;
 	}
+	
+	@JsonProperty("course_title")
+	public String getCourseTitle()
+	{
+		return course_title;
+	}
+	
+	//Meeting geters
+	
+	@JsonProperty("extra")
+	public List<MeetingResult> getExtra()
+	{
+		return extra;
+	}
+	
 
 	public void setCourse_data_id(int course_data_id)
 	{

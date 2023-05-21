@@ -1,4 +1,4 @@
-package org.ezcampus.search.core.models;
+package org.ezcampus.search.core.models.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,6 +12,9 @@ public class SearchQuery {
     @JsonProperty("results_per_page")
     private int resultsPerPage;
 
+    @JsonProperty("term_id")
+    private int termId;
+    
     //*** Getters and Setters
     
     public String getSearchTerm() {
@@ -36,6 +39,14 @@ public class SearchQuery {
 
     public void setResultsPerPage(int resultsPerPage) {
         this.resultsPerPage = resultsPerPage;
+    }
+    
+    public int getTerm() {
+        return termId;
+    }
+
+    public void setTerm(int t) {
+        this.termId = t;
     }
     
 }

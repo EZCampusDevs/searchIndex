@@ -6,11 +6,12 @@ import java.util.List;
 
 import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.System.ResourceLoader;
-import org.ezcampus.search.core.models.CourseDataResult;
+import org.ezcampus.search.core.models.response.CourseDataResult;
 import org.ezcampus.search.data.StringHelper;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
+import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.entity.WordMap;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
@@ -28,20 +29,14 @@ public abstract class SearchHandler
 		GlobalSettings.IS_DEBUG = true;
 		ResourceLoader.loadTinyLogConfig();
 		
-		String term = "tyler";
-		
-		List<CourseDataResult> results1 = searchExactWords(term, 1, 50);
-		Logger.info("Exact results for {}", term);
-		results1.forEach(x -> {
-			Logger.info(x);
-		});
+		String term = "ana";
 		
 		Logger.info("");
 		
-		List<CourseDataResult> results2 = searchFuzzy(term, 1, 50);
+		List<CourseDataResult> results2 = searchExactWords(term, 1, 5, 202305);
 		Logger.info("Like results for {}", term);
 		results2.forEach(x -> {
-			Logger.info(x);
+			x.Print();
 		});
 		
 	}
@@ -61,15 +56,22 @@ public abstract class SearchHandler
 					.createQuery("SELECT cf FROM CourseFaculty cf WHERE cf.courseDataId = :courseData", CourseFaculty.class)
 					.setParameter("courseData", courseData)
 					.getResultList();
+			
+			List<Meeting> meetingQuery = session
+				    .createQuery("SELECT m FROM Meeting m WHERE m.courseDataId = :courseData", Meeting.class)
+				    .setParameter("courseData", courseData)
+				    .getResultList();
 
 
-			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery);
+			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
 
 			cdr.add(combinedEntry);
 		}
 		
 		return cdr;
 	}
+
+	
 
 
 	public static void rank(List<WordMap> matchingEntries, List<CourseData> relevantCDs)
@@ -98,7 +100,7 @@ public abstract class SearchHandler
 	}
 	
 	
-	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage)
+	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index
 		ArrayList<CourseData> relevantCDs = new ArrayList<>();
@@ -120,17 +122,18 @@ public abstract class SearchHandler
 							.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
 				            .setParameter("targetWord", "%" + word + "%")
 				            .getResultList();
-
-				
+		
 					for(Word matchingWord : matchingWordList) 
 					{
 						Logger.debug("Found WORD: {} ID: {}", matchingWord.getWordString(), matchingWord.getId());
 						
 						List<WordMap> matchingEntries = session
-								.createQuery("FROM WordMap wm WHERE wm.word = :targetId", WordMap.class)
-								.setParameter("targetId", matchingWord)
-								.setFirstResult(pageoffset)
-								.setMaxResults(resultsPerPage)
+							    .createQuery("FROM WordMap wm WHERE wm.word = :targetId "
+							    		+ "AND wm.courseData.course.term.termId = :termId", WordMap.class)
+							    .setParameter("targetId", matchingWord)
+							    .setParameter("termId", termId)
+						//		.setFirstResult(pageoffset)
+						//		.setMaxResults(resultsPerPage)
 								.list();
 
 						rank(matchingEntries, relevantCDs);						
@@ -142,8 +145,7 @@ public abstract class SearchHandler
 	}
 	
 	
-	
-	public static List<CourseDataResult> searchExactWords(String searchTerm, int page, int resultsPerPage)
+	public static List<CourseDataResult> searchExactWords(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index
 		ArrayList<CourseData> relevantCDs = new ArrayList<>();
@@ -165,7 +167,7 @@ public abstract class SearchHandler
 						.createQuery("FROM Word w WHERE w.word = :targetWord", Word.class)
 						.setParameter("targetWord", word)
 						.uniqueResult();
-
+				
 				if (matchingWord == null)
 				{
 					return;
@@ -175,11 +177,13 @@ public abstract class SearchHandler
 
 
 				List<WordMap> matchingEntries = session
-						.createQuery("FROM WordMap wm WHERE wm.word = :targetId", WordMap.class)
-						.setParameter("targetId", matchingWord)
-						.setFirstResult(pageoffset)
-						.setMaxResults(resultsPerPage)
-						.list();
+					    .createQuery("FROM WordMap wm WHERE wm.word = :targetId "
+					    		+ "AND wm.courseData.course.term.termId = :termId", WordMap.class)
+					    .setParameter("targetId", matchingWord)
+					    .setParameter("termId", termId)
+					    .setFirstResult(pageoffset)
+					    .setMaxResults(resultsPerPage)
+					    .list();
 
 				rank(matchingEntries, relevantCDs);
 			});

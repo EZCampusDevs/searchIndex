@@ -40,6 +40,7 @@ pipeline {
                 sh "docker exec -it ${containerId} unzip glassfish-7.0.4.zip"
             }
         }
+        
         // stage('Deploy WAR') 
         // {
         //     steps 
@@ -56,6 +57,5 @@ pipeline {
         //         }
         //     }
         // }
-  }
     }
 }

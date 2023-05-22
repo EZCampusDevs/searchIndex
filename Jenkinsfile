@@ -6,6 +6,9 @@ pipeline {
         jdk 'OpenJDK17'
     }
     
+    try {
+        
+    
     stages { 
         stage('Build') { 
             steps { 
@@ -18,5 +21,15 @@ pipeline {
                 echo 'This is a minimal pipeline.' 
             }
         }
+    }
+    }
+    
+    catch(e) {
+        currentBuild.result = "FAILED"
+        throw e
+        
+    }
+    finally{
+        echo "finally block"
     }
 }

@@ -3,7 +3,11 @@ pipeline {
     
     tools {
         maven 'maven-instance'
+        jdk 'OpenJDK17'
     }
+    
+    try {
+        
     
     stages { 
         stage('Build') { 
@@ -17,5 +21,15 @@ pipeline {
                 echo 'This is a minimal pipeline.' 
             }
         }
+    }
+    }
+    
+    catch(e) {
+        currentBuild.result = "FAILED"
+        throw e
+        
+    }
+    finally{
+        echo "finally block"
     }
 }

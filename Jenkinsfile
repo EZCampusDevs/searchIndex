@@ -21,23 +21,28 @@ pipeline {
         
         stage('Build Glassfish Docker')
         {
-            sh 'docker run --name glassfish-instance -d ubuntu:latest tail -f /dev/null'
-
+            steps 
+            {
+                sh 'docker run --name glassfish-instance -d ubuntu:latest tail -f /dev/null'
+            }
         }
 
         stage('Run container') 
         {
-            script
+            steps
             {
-                def containerId = sh(
-                    returnStdout: true, 
-                    script: 'docker ps -aqf "name=glassfish-instance"'
-                    ).trim()
+                script
+                {
+                    def containerId = sh(
+                        returnStdout: true, 
+                        script: 'docker ps -aqf "name=glassfish-instance"'
+                        ).trim()
 
-                sh "docker exec -it ${containerId} apt-get update"
-                sh "docker exec -it ${containerId} apt-get install -y wget"
-                sh "docker exec -it ${containerId} wget https://download.eclipse.org/ee4j/glassfish/glassfish-7.0.4.zip"
-                sh "docker exec -it ${containerId} unzip glassfish-7.0.4.zip"
+                    sh "docker exec -it ${containerId} apt-get update"
+                    sh "docker exec -it ${containerId} apt-get install -y wget"
+                    sh "docker exec -it ${containerId} wget https://download.eclipse.org/ee4j/glassfish/glassfish-7.0.4.zip"
+                    sh "docker exec -it ${containerId} unzip glassfish-7.0.4.zip"
+                }
             }
         }
         

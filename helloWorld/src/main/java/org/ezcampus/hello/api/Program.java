@@ -1,12 +1,13 @@
-package org.ezcampus.search.api;
+package org.ezcampus.hello.api;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.ezcampus.search.System.GlobalSettings;
-import org.ezcampus.search.System.ResourceLoader;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -18,7 +19,10 @@ import jakarta.ws.rs.ext.Provider;
 
 @ApplicationPath("/")
 public class Program extends ResourceConfig {
-
+	
+	public static final Path LOGS_DIR_PATH = Paths.get(".", "logs");
+	public static boolean IS_DEBUG = false;
+	
 	private static class TinylogHandler implements UncaughtExceptionHandler 
     {
         @Override
@@ -29,21 +33,49 @@ public class Program extends ResourceConfig {
         }
     }
 	
-    public Program() {
-        GlobalSettings.IS_DEBUG = true;
+	public static void loadTinyLogConfig()
+    {
+        try
+        {
+            Configuration.set("writer1", "file");
+            Configuration.set("writer1.file", Path.of(LOGS_DIR_PATH.toString(), "logs.txt").toString());
+            Configuration.set("writer1.format", "[{date: yyyy-MM-dd HH:mm:ss.SSS}] [{level}] {message}");
+            Configuration.set("writer1.append", "true");
+            Configuration.set("writer1.level", "trace");
 
-        ResourceLoader.loadTinyLogConfig();
+            Configuration.set("writer2", "console");
+            Configuration.set("writer2.format", "[{date: yyyy-MM-dd HH:mm:ss.SSS}] [{level}] {message}");
+
+            if(IS_DEBUG)
+            {
+                Configuration.set("writer2.level", "trace");
+            }
+            else
+            {
+                Configuration.set("writer2.level", "info");
+            }
+
+            Logger.info("TinyLog has initialized!");
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Logger.warn("Tried to update tinylog config, it was already set");
+        }
+    }
+	
+    public Program() 
+    {
+    	loadTinyLogConfig();
         Thread.setDefaultUncaughtExceptionHandler(new TinylogHandler());
         
-        Logger.info("{} starting...", GlobalSettings.BRAND_LONG);
-        Logger.info("Running as debug: {}", GlobalSettings.IS_DEBUG);
+        Logger.info("{} starting...", "helloWorld");
+        Logger.info("Running as debug: {}", IS_DEBUG);
 
         // Set the package where the resources are located
-        packages("org.ezcampus.search.api");
+        packages("org.ezcampus.hello.api");
 
         // Enable CORS
         register(CORSFilter.class);
-
     }
     
     @Provider

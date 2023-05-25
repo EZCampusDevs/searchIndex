@@ -1,13 +1,11 @@
 package org.ezcampus.search.api;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.ezcampus.search.core.SearchHandler;
 import org.ezcampus.search.core.models.request.SearchQuery;
 import org.ezcampus.search.core.models.response.CourseDataResult;
-import org.ezcampus.search.hibernate.entity.Word;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.Session;
 import org.tinylog.Logger;
@@ -23,6 +21,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+//Hibernate Entities:
+import org.ezcampus.search.hibernate.entity.Term;
+import org.ezcampus.search.hibernate.entity.Word;
+
 
 @Path("/search")
 public class Search
@@ -90,4 +93,27 @@ public class Search
 //		return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
 
 	}
+        
+        //Import all in Netbeans: CTRL + SHIFT + I
+        
+    @GET
+    @Path("dummy")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getRequestDummy(@QueryParam("p") String p){
+    
+        try (Session session = HibernateUtil.getSessionFactory().openSession() )
+        {
+        
+        List<Term> existingTerms = session.createQuery("FROM Term", Term.class).getResultList();
+        String str = String.join(", ", existingTerms.stream().map(x -> x.toString()).toList());
+        str += " ... oh yea, and your word is: "+p;
+
+        return Response.status(Response.Status.OK).entity(str).build();
+        
+        }
+
+
+    }
+        
 }
+

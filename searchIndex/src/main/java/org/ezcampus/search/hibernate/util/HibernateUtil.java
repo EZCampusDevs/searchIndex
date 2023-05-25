@@ -38,11 +38,11 @@ public class HibernateUtil
 				
 				Configuration config = new Configuration();
 				 
-		        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-		        config.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/hibernate_db?useSSL=false&allowPublicKeyRetrieval=true");
-		        config.setProperty("hibernate.connection.username", "test");
-		        config.setProperty("hibernate.connection.password", "root");
-		        config.setProperty("hibernate.connection.pool_size", "1");
+		        config.setProperty("hibernate.driver_class", "com.mysql.cj.jdbc.Driver");
+		        config.setProperty("hibernate.url", "jdbc:mysql://localhost:3306/hibernate_db?useSSL=false&allowPublicKeyRetrieval=true");
+		        config.setProperty("hibernate.username", "test");
+		        config.setProperty("hibernate.password", "root");
+		        config.setProperty("hibernate.pool_size", "1");
 		        // config.setProperty("hibernate.show_sql", "true");
 		        config.setProperty("hibernate.generate_statistics", "false");
 		        

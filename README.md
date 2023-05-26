@@ -220,3 +220,11 @@ Under Run config settings:
 - Under `Deployment` at the top ` + > Artifact > War artifact`
 
 Apply changes and close
+
+
+# If you're using Windows, use the `kill_8080.cmd`
+
+This CMD script needs to be ran as Administrator, it essentially kills whatever task is running on port tcp:8080
+
+Glassfish7 uses this port, and it throws cryptic errors when something is block it
+

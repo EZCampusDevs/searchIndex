@@ -100,7 +100,7 @@ public abstract class SearchHandler
 	}
 	
 	
-	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
+public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index
 		ArrayList<CourseData> relevantCDs = new ArrayList<>();

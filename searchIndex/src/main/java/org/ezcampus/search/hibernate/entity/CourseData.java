@@ -51,7 +51,7 @@ public class CourseData {
 	@Column(name = "enrollment")
 	private Integer enrollment;
 
-	@Column(name = "seats_vailable")
+	@Column(name = "seats_available")
 	private Integer seatsAvailable;
 
 	@Column(name = "wait_capacity")

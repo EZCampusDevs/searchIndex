@@ -10,6 +10,7 @@ import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Faculty;
 import org.ezcampus.search.hibernate.entity.Meeting;
+import org.ezcampus.search.hibernate.entity.School;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entity.Term;
 import org.ezcampus.search.hibernate.entity.Word;
@@ -71,6 +72,7 @@ public class HibernateUtil
 		        config.addAnnotatedClass(Faculty.class);
 		        config.addAnnotatedClass(CourseFaculty.class);
 		        config.addAnnotatedClass(ScrapeHistory.class);
+		        config.addAnnotatedClass(School.class);
 		        
 				sessionFactory = config.buildSessionFactory();
 				

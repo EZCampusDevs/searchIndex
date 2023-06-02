@@ -2,7 +2,10 @@ package org.ezcampus.search.hibernate.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -13,6 +16,12 @@ public class Term {
     @Column(name = "term_id", nullable = false)
     private Integer termId;
 
+
+    @Id
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "school_id")
+    private School school;
+    
     @Column(name = "term_description")
     private String termDescription;
 

@@ -1,12 +1,13 @@
 pipeline { 
     agent any  
-    
-    tools {
-        maven 'maven-instance'
-        jdk 'OpenJDK17'
+
+     tools {
+            maven 'maven3'
+            jdk 'OpenJDK17'
     }
     
     stages { 
+        
         stage('Build War File') { 
             steps { 
                 
@@ -19,48 +20,22 @@ pipeline {
             }
         }
         
-        stage('Build Glassfish Docker')
-        {
-            steps 
-            {
-                sh 'docker run --name glassfish-instance -d ubuntu:latest tail -f /dev/null'
-            }
-        }
-
-        stage('Run container') 
-        {
-            steps
-            {
-                script
-                {
-                    def containerId = sh(
-                        returnStdout: true, 
-                        script: 'docker ps -aqf "name=glassfish-instance"'
-                        ).trim()
-
-                    sh "docker exec -it ${containerId} apt-get update"
-                    sh "docker exec -it ${containerId} apt-get install -y wget"
-                    sh "docker exec -it ${containerId} wget https://download.eclipse.org/ee4j/glassfish/glassfish-7.0.4.zip"
-                    sh "docker exec -it ${containerId} unzip glassfish-7.0.4.zip"
+        stage('Remote Deploy War File') {
+            steps {
+                dir("searchIndex/target"){
+                    sshPublisher(publishers: [
+                        sshPublisherDesc(configName: '2GB_Glassfish_VPS', transfers: [
+                            sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, 
+                            noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: './warbuilds', remoteDirectorySDF: false, 
+                            removePrefix: '', sourceFiles: 'searchIndex.war')
+                        ], 
+                        usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)
+                    ])
                 }
+                
+                echo "war file copied"
             }
         }
-        
-        // stage('Deploy WAR') 
-        // {
-        //     steps 
-        //     {
-        //         script 
-        //         {
-        //             def containerId = sh(
-        //                 returnStdout: true, 
-        //                 script: 'docker ps -aqf "name=mycontainer"'
-        //                 ).trim()
-
-        //             sh "docker exec -it ${containerId} "
-        //             sh "docker cp target/myapp.war ${containerId}:/glassfish-5.1.0/glassfish/domains/domain1/autodeploy/"
-        //         }
-        //     }
-        // }
+    
     }
 }

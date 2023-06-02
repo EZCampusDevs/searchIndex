@@ -17,7 +17,6 @@ public class Term {
     private Integer termId;
 
 
-    @Id
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "school_id")
     private School school;

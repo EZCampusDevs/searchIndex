@@ -20,7 +20,6 @@ public class Course {
     @Column(name = "course_id")
     private Integer courseId;
 
-    @Id
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "term_id")
     private Term term;

@@ -54,7 +54,7 @@ public class Search
 				return Response.status(Response.Status.OK).entity(jsonArray).build(); // Response with 200 OK and data
 																						// (search results)
 
-			} catch (JsonProcessingException e) {
+			} catch (JsonProcessingException e) { //Error handling for JSON building of results
 				e.printStackTrace();
 			}
 

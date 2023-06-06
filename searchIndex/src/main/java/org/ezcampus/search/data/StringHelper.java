@@ -7,7 +7,21 @@ import java.util.regex.Pattern;
 
 public class StringHelper
 {
+	public static String getEllapsedTimePretty(long startTimeNano) {
 
+		long elapsedTime = System.nanoTime() - startTimeNano;
+
+		// nanoseconds to milliseconds
+        long elapsedTimeMillis = (long) (elapsedTime / 1e-6);
+        long seconds = (long) (elapsedTimeMillis / 1000);
+        long minutes = (long) (seconds / 60);
+        long hours = (long)(minutes / 60);
+        long days = (long)( hours / 24);
+
+        return String.format("Elapsed Time: %d days, %02d:%02d:%02d", days, hours, minutes, seconds);
+
+	}
+	
 	public static String cleanWord(String word)
 	{
 		String trimmedWord = word.trim().toLowerCase();

@@ -23,10 +23,10 @@ public class DatabaseProcessing
 	public static final String WORD_INSERT_SPLIT_REGEX = "[\\s,_]";
 
 	private static boolean _isProcessing = false;
-	private static long _processingStartedAtNano = 0;
-	private static long _processingStartedAt = 0;
-	private static long _processingEndedAtNano = 0;
-	private static long _processingEndedAt = 0;
+	private static long _processingStartedAtNano = System.nanoTime();
+	private static long _processingStartedAt = System.currentTimeMillis();
+	private static long _processingEndedAtNano = System.nanoTime();
+	private static long _processingEndedAt = System.currentTimeMillis();
 	
 	public static boolean isProcessing()
 	{

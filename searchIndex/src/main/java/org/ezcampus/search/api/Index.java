@@ -51,7 +51,6 @@ public class Index
 	
 	@GET
 	@Path("/trigger")
-	@Produces(MediaType.APPLICATION_JSON)
 	public Response triggerDatabaseIndex() 
 	{
 		if(DatabaseProcessing.isProcessing())

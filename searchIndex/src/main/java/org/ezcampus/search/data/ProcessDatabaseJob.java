@@ -14,8 +14,7 @@ public class ProcessDatabaseJob extends ThreadCallCallback
 	@Override
 	protected void runWithParams(Object... args) throws ThreadShuttingDownException
 	{
-		// TODO Auto-generated method stub
-		
+		DatabaseProcessing.processLastScrape();
 	}
 
 }

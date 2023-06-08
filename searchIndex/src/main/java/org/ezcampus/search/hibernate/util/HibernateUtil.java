@@ -43,7 +43,7 @@ public class HibernateUtil
 		        config.setProperty("hibernate.connection.url", "jdbc:mysql://mysql-instance:3306/hibernate_db?useSSL=false&allowPublicKeyRetrieval=true");
 		        config.setProperty("hibernate.connection.username", "test");
 		        config.setProperty("hibernate.connection.password", "root");
-		        config.setProperty("hibernate.connection.pool_size", "1");
+		        config.setProperty("hibernate.connection.pool_size", "10");
 		        // config.setProperty("hibernate.show_sql", "true");
 		        config.setProperty("hibernate.generate_statistics", "false");
 		        

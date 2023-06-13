@@ -15,6 +15,9 @@ public class SearchQuery {
     @JsonProperty("term_id")
     private int termId;
     
+    @JsonProperty("search_method")
+    private boolean method;
+    
     //*** Getters and Setters
     
     public String getSearchTerm() {
@@ -49,4 +52,7 @@ public class SearchQuery {
         this.termId = t;
     }
     
+    public boolean getSearchMethod() {
+    	return this.method;
+    }
 }

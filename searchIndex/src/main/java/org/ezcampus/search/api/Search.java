@@ -40,12 +40,27 @@ public class Search
 
 			SearchQuery requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
 
-			List<CourseDataResult> results = SearchHandler.searchFuzzy(
-					requestData.getSearchTerm(), 
-					requestData.getPage(), 
-					requestData.getResultsPerPage(),
-					requestData.getTerm()
-			);
+				
+			List<CourseDataResult> results;
+			
+			if (requestData.getSearchMethod())
+			{
+				results = SearchHandler.searchFuzzy(
+						requestData.getSearchTerm(), 
+						requestData.getPage(), 
+						requestData.getResultsPerPage(),
+						requestData.getTerm()
+				);
+			}
+			else {
+				results = SearchHandler.searchFuzzy2(
+						requestData.getSearchTerm(), 
+						requestData.getPage(), 
+						requestData.getResultsPerPage(),
+						requestData.getTerm()
+				);
+			}
+				
 
 			// Convert to JSON array string
 			try {
@@ -63,6 +78,8 @@ public class Search
 			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
 		}
 	}
+	
+	
 
 	@GET
 	@Path("orm")

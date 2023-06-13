@@ -29,14 +29,27 @@ public abstract class SearchHandler
 		GlobalSettings.IS_DEBUG = true;
 		ResourceLoader.loadTinyLogConfig();
 
-		String term = "ana";
+		String term = "calculus II";
 
 		Logger.info("");
 
-		List<CourseDataResult> results2 = searchExactWords(term, 1, 5, 202305);
-		Logger.info("Like results for {}", term);
+//		List<CourseDataResult> results1 = searchExactWords(term, 1, 5, 202305);
+		long start = System.nanoTime();
+		List<CourseDataResult> results2 = searchFuzzy(term, 1, 5, 202305);
+		double elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
+		Logger.info("Finished searchFuzzy1 after {} seconds", elapsedTime);
+
+		start = System.nanoTime();
+		List<CourseDataResult> results3 = searchFuzzy2(term, 1, 5, 202305);
+		elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
+		Logger.info("Finished searchFuzzy2 after {} seconds", elapsedTime);
+		
 		results2.forEach(x -> {
-			x.Print();
+			Logger.info(x);
+		});
+		Logger.info("");
+		results3.forEach(x -> {
+			Logger.info(x);
 		});
 
 	}
@@ -61,6 +74,18 @@ public abstract class SearchHandler
 					.setParameter("courseData", courseData).getResultList();
 
 			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
+			
+			
+			
+//			String query = "SELECT cf, m FROM CourseFaculty cf JOIN Meeting m " +
+//			        "WHERE cf.courseDataId = :courseData AND m.courseDataId = :courseData";
+//
+//			List<Object[]> resultList = session.createQuery(query, Object[].class)
+//			        .setParameter("courseData", courseData)
+//			        .getResultList();
+//
+//			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, resultList);
+			
 
 			cdr.add(combinedEntry);
 		}
@@ -93,6 +118,67 @@ public abstract class SearchHandler
 		}
 	}
 
+	
+	public static List<CourseDataResult> searchFuzzy2(String searchTerm, int page, int resultsPerPage, int termId)
+	{
+		// Look up in the word index
+		ArrayList<CourseData> relevantCDs = new ArrayList<>();
+
+		if (searchTerm == null)
+			return new ArrayList<>();
+
+		// Calculate the offset based on the page number
+		int pageoffset = resultsPerPage * (page - 1);
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
+			Arrays.stream(searchTerm.split("\\s+"))
+				.map(StringHelper::cleanWord)
+				.filter(word -> !word.isEmpty())
+				.forEach(word -> 
+				{
+					String query = "SELECT wm FROM WordMap wm " +
+					        "JOIN wm.word w " +
+					        "JOIN wm.courseData cd " +
+					        "JOIN cd.course c " +
+					        "JOIN c.term t " +
+					        "WHERE CONCAT('%', w.word, '%') LIKE :targetWord " +
+					        "AND t.termId = :termId";
+					
+					List<WordMap> matchingEntries = session.createQuery(query, WordMap.class)
+					        .setParameter("targetWord", "%" + word + "%")
+					        .setParameter("termId", termId)
+					        .getResultList();
+					
+					rank(matchingEntries, relevantCDs);
+//					
+//						List<Word> matchingWordList = session
+//								.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
+//								.setParameter("targetWord", "%" + word + "%").getResultList();
+//
+//						for (Word matchingWord : matchingWordList)
+//						{
+//							Logger.debug("Found WORD: {} ID: {}", matchingWord.getWordString(), matchingWord.getId());
+//
+//							List<WordMap> matchingEntries = session
+//									.createQuery(
+//											"FROM WordMap wm WHERE wm.word = :targetId "
+//													+ "AND wm.courseData.course.term.termId = :termId",
+//											WordMap.class
+//									).setParameter("targetId", matchingWord).setParameter("termId", termId)
+//									// .setFirstResult(pageoffset)
+//									// .setMaxResults(resultsPerPage)
+//									.list();
+//
+//							rank(matchingEntries, relevantCDs);
+//						}
+					});
+
+			return loadIn(relevantCDs, session);
+		}
+	}
+	
+	
 	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index

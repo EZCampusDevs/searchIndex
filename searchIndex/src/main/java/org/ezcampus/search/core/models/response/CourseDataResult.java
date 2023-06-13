@@ -30,6 +30,53 @@ public class CourseDataResult
 	// Pagination & Display Order
 	private int ranking;
 
+	public CourseDataResult(Course course, CourseData courseData,List<Object[]> courseFac_courseMeetings)
+	{
+
+		//Assigning entries from `Course`
+		
+		course_id = course.getCourseId();
+		course_code = course.getCourseCode();
+		course_desc = course.getCourseDescription();
+		
+		
+		//Assigning entries from `CourseData`
+		
+		course_data_id = courseData.getCourseDataId();
+		course_crn = courseData.getCrn();
+		class_type = courseData.getClassType();
+		course_title = courseData.getCourseTitle();
+		
+		
+		ranking = courseData.ranking;
+		
+		//Assigning from list of CourseFaculty (Building FacultyResult objs)
+
+		this.instructors = new ArrayList<>(courseFac_courseMeetings.size());
+		this.extra = new ArrayList<>(courseFac_courseMeetings.size());
+		
+		for (Object[] result : courseFac_courseMeetings)
+		{
+			Logger.debug("Instructor: {}, Meeting {}", result[0], result[1]);
+			
+		    CourseFaculty e = (CourseFaculty) result[0];
+		    if(e != null)
+			instructors.add(new FacultyResult(
+					e.getFaculty().getInstructorName(), 
+					e.getFaculty().getInstructorEmail()));
+		    
+			Meeting m = (Meeting) result[1];
+			if(m != null)
+			extra.add(
+					new MeetingResult( m.getBuilding() , 
+							m.getBuildingDescription()));
+			
+		}
+		
+		Logger.debug("instructor size {}", instructors.size());
+		Logger.debug("meeting size {}", extra.size());
+	}
+	
 	public CourseDataResult(Course course, CourseData courseData, List<CourseFaculty> courseFac, List<Meeting> meets)
 	{
 		

@@ -24,35 +24,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class SearchHandler
 {
-	public static void main(String[] args)
-	{
-		GlobalSettings.IS_DEBUG = true;
-		ResourceLoader.loadTinyLogConfig();
+// 	public static void main(String[] args)
+// 	{
+// 		GlobalSettings.IS_DEBUG = true;
+// 		ResourceLoader.loadTinyLogConfig();
 
-		String term = "calculus II";
+// 		String term = "calculus II";
 
-		Logger.info("");
+// 		Logger.info("");
 
-//		List<CourseDataResult> results1 = searchExactWords(term, 1, 5, 202305);
-		long start = System.nanoTime();
-		List<CourseDataResult> results2 = searchFuzzy(term, 1, 5, 202305);
-		double elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
-		Logger.info("Finished searchFuzzy1 after {} seconds", elapsedTime);
+// //		List<CourseDataResult> results1 = searchExactWords(term, 1, 5, 202305);
+// 		long start = System.nanoTime();
+// 		List<CourseDataResult> results2 = searchFuzzy(term, 1, 5, 202305);
+// 		double elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
+// 		Logger.info("Finished searchFuzzy1 after {} seconds", elapsedTime);
 
-		start = System.nanoTime();
-		List<CourseDataResult> results3 = searchFuzzy2(term, 1, 5, 202305);
-		elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
-		Logger.info("Finished searchFuzzy2 after {} seconds", elapsedTime);
+// 		start = System.nanoTime();
+// 		List<CourseDataResult> results3 = searchFuzzy2(term, 1, 5, 202305);
+// 		elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
+// 		Logger.info("Finished searchFuzzy2 after {} seconds", elapsedTime);
 		
-		results2.forEach(x -> {
-			Logger.info(x);
-		});
-		Logger.info("");
-		results3.forEach(x -> {
-			Logger.info(x);
-		});
+// 		results2.forEach(x -> {
+// 			Logger.info(x);
+// 		});
+// 		Logger.info("");
+// 		results3.forEach(x -> {
+// 			Logger.info(x);
+// 		});
 
-	}
+// 	}
 
 	public static List<CourseDataResult> loadIn(List<CourseData> results, Session session)
 	{
@@ -105,7 +105,7 @@ public abstract class SearchHandler
 			{
 				if (relevantCD.equals(courseData))
 				{
-					relevantCD.ranking += wordMap.getCount();
+					relevantCD.ranking += wordMap.getCount(); //TODO: Replace this with Leveinsthein distance?
 					isNewEntry = false;
 					break;
 				}
@@ -132,9 +132,10 @@ public abstract class SearchHandler
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
-			Arrays.stream(searchTerm.split("\\s+"))
-				.map(StringHelper::cleanWord)
-				.filter(word -> !word.isEmpty())
+			Arrays.stream(searchTerm.split("\\s+")) //Stream words in the search term "CALC II" -> Stream of strings [ "CALC" , "II"]
+				.map(StringHelper::cleanWord) 
+				.filter(word -> !word.isEmpty()) 
+				.filter(word -> word.length() >= 3)
 				.forEach(word -> 
 				{
 					String query = "SELECT wm FROM WordMap wm " +
@@ -151,29 +152,7 @@ public abstract class SearchHandler
 					        .getResultList();
 					
 					rank(matchingEntries, relevantCDs);
-//					
-//						List<Word> matchingWordList = session
-//								.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
-//								.setParameter("targetWord", "%" + word + "%").getResultList();
-//
-//						for (Word matchingWord : matchingWordList)
-//						{
-//							Logger.debug("Found WORD: {} ID: {}", matchingWord.getWordString(), matchingWord.getId());
-//
-//							List<WordMap> matchingEntries = session
-//									.createQuery(
-//											"FROM WordMap wm WHERE wm.word = :targetId "
-//													+ "AND wm.courseData.course.term.termId = :termId",
-//											WordMap.class
-//									).setParameter("targetId", matchingWord).setParameter("termId", termId)
-//									// .setFirstResult(pageoffset)
-//									// .setMaxResults(resultsPerPage)
-//									.list();
-//
-//							rank(matchingEntries, relevantCDs);
-//						}
-					});
-
+				});
 			return loadIn(relevantCDs, session);
 		}
 	}
@@ -193,7 +172,8 @@ public abstract class SearchHandler
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
 			Arrays.stream(searchTerm.split("\\s+")).map(StringHelper::cleanWord).filter(word -> !word.isEmpty())
-					.forEach(word -> {
+			.filter(word -> word.length() >= 3)		
+			.forEach(word -> {
 						List<Word> matchingWordList = session
 								.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
 								.setParameter("targetWord", "%" + word + "%").getResultList();

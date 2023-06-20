@@ -52,7 +52,7 @@ public class Search
 						requestData.getTerm()
 				);
 			}
-			else {
+			else { // ⚡ Performance Boosted by: Minno ⚡
 				results = SearchHandler.searchFuzzy2(
 						requestData.getSearchTerm(), 
 						requestData.getPage(), 

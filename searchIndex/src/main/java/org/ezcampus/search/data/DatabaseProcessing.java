@@ -88,7 +88,7 @@ public class DatabaseProcessing
 
 		Logger.info("Finished indexing after {}ms", stopms);
 	}
-
+	
 	public static void _processLastScrape() throws ThreadShuttingDownException
 	{
 		if(isProcessing())
@@ -199,8 +199,6 @@ public class DatabaseProcessing
 			_processingEndedAtNano = System.nanoTime();
 			_isProcessing = false;
 		}
-		
-		
 
 		Logger.info("Word & Word Map | Tables Loaded-in. Successfully Completed !");
 		return;

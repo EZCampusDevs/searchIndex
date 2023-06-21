@@ -7,21 +7,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "tbl_term")
+@Table(name = "tbl_term",
+uniqueConstraints = @UniqueConstraint(columnNames = { "schoo_id", "real_term_id" }))
 public class Term {
 
     @Id
     @Column(name = "term_id", nullable = false)
     private Integer termId;
 
-
+    @Column(name = "real_term_id", nullable = false)
+    private Integer realTermId;
+    
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "school_id")
     private School school;
     
-    @Column(name = "term_description")
+    @Column(name = "term_description", length = 128)
     private String termDescription;
 
     public Term() {}

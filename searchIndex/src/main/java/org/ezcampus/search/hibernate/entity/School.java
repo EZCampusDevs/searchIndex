@@ -19,5 +19,8 @@ public class School {
 
     @Column(name = "school_unique_value", length = 128)
     private String schoolUniqueValue;
+    
+    @Column(name = "subdomain", length = 64)
+    private String subdomain;
 
 }

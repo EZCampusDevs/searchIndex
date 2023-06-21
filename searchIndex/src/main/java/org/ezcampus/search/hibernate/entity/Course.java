@@ -24,10 +24,10 @@ public class Course {
     @JoinColumn(name = "term_id")
     private Term term;
 
-    @Column(name = "course_code")
+    @Column(name = "course_code", length = 32)
     private String courseCode;
 
-    @Column(name = "course_description")
+    @Column(name = "course_description", length = 128)
     private String courseDescription;
 
     public Course() {}

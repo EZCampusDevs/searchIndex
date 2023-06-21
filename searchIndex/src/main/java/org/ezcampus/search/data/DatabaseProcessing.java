@@ -133,6 +133,8 @@ public class DatabaseProcessing
 
 			int iteration = 0;
 
+			Logger.info("Found {} course terms", courseData_Course_Term.size());
+
 			for (CourseData courseData : courseData_Course_Term)
 			{
 				ThreadHandling.dieIfShuttingDown();

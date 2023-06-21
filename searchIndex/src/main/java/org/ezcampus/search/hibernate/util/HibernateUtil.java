@@ -48,7 +48,7 @@ public class HibernateUtil
 		        config.setProperty("hibernate.generate_statistics", "false");
 		        
 		        config.setProperty("hibernate.current_session_context_class", "thread");
-		        config.setProperty("hibernate.hbm2ddl.auto", "update");
+		        config.setProperty("hibernate.hbm2ddl.auto", "validate");
 		        config.setProperty("hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS", "1");
 		        
 		        config.setProperty("hibernate.dbcp.initialSize", "5");

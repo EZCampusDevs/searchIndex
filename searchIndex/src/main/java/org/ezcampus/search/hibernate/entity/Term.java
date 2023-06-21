@@ -11,7 +11,7 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "tbl_term",
-uniqueConstraints = @UniqueConstraint(columnNames = { "schoo_id", "real_term_id" }))
+uniqueConstraints = @UniqueConstraint(columnNames = { "school_id", "real_term_id" }))
 public class Term {
 
     @Id

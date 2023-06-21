@@ -17,6 +17,25 @@ public class StringHelper
         return String.format("Elapsed Time: %s", TimeHelper.GetFormattedInterval(elapsedTimeMillis));
 
 	}
+	
+    public static String getRomanNumeralMapping(String value)
+    {
+        switch (value)
+        {
+            case "I":
+                return "1";
+            case "II":
+                return "2";
+            case "III":
+                return "3";
+            case "IV":
+                return "4";
+            case "V":
+                return "5";
+            default:
+                return null;
+        }
+    }
 
 	public static String cleanWord(String word)
 	{

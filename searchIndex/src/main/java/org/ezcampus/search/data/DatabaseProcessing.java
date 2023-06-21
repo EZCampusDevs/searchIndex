@@ -60,7 +60,7 @@ public class DatabaseProcessing
 		ResourceLoader.loadTinyLogConfig();
 		processLastScrape();
 	}
-
+	
 	public static void splitInsertWord(String value, CourseData courseData, Session session)
 	{
 		if (value == null)
@@ -73,6 +73,14 @@ public class DatabaseProcessing
 				continue;
 			}
 
+			String number = StringHelper.getRomanNumeralMapping(v);
+			
+			if (number != null) 
+			{
+				Logger.debug("Inserting word link for value '{}'", number);
+				WordDAO.insertLinkWord(number, courseData, session);
+			}
+			
 			Logger.debug("Inserting word link for value '{}'", v);
 			WordDAO.insertLinkWord(v, courseData, session);
 		}

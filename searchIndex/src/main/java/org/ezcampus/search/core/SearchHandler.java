@@ -134,8 +134,7 @@ public abstract class SearchHandler
 		{
 			Arrays.stream(searchTerm.split("\\s+")) //Stream words in the search term "CALC II" -> Stream of strings [ "CALC" , "II"]
 				.map(StringHelper::cleanWord) 
-				.filter(word -> !word.isEmpty()) 
-				.filter(word -> word.length() >= 3)
+				.filter(word -> !word.isEmpty() && word.length() >= 3) 
 				.forEach(word -> 
 				{
 					String query = "SELECT wm FROM WordMap wm " +
@@ -171,9 +170,10 @@ public abstract class SearchHandler
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
-			Arrays.stream(searchTerm.split("\\s+")).map(StringHelper::cleanWord).filter(word -> !word.isEmpty())
-			.filter(word -> word.length() >= 3)		
-			.forEach(word -> {
+			Arrays.stream(searchTerm.split("\\s+"))
+				.map(StringHelper::cleanWord)
+				.filter(word -> !word.isEmpty() && word.length() >= 3)
+				.forEach(word -> {
 						List<Word> matchingWordList = session
 								.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
 								.setParameter("targetWord", "%" + word + "%").getResultList();

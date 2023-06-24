@@ -142,7 +142,7 @@ public abstract class SearchHandler
 					        "JOIN wm.courseData cd " +
 					        "JOIN cd.course c " +
 					        "JOIN c.term t " +
-					        "WHERE CONCAT('%', w.word, '%') LIKE :targetWord " +
+					        "WHERE w.word LIKE :targetWord " +
 					        "AND t.termId = :termId";
 					
 					List<WordMap> matchingEntries = session.createQuery(query, WordMap.class)

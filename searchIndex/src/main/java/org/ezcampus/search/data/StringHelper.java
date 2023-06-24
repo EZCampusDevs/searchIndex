@@ -37,14 +37,14 @@ public class StringHelper
         }
     }
 
+	private static final Pattern CLEAN_REGEX = Pattern.compile("[^a-z0-9']+");
+
 	public static String cleanWord(String word)
 	{
 		String trimmedWord = word.trim().toLowerCase();
 
-		final String REGEX = "[^a-z0-9']+";
-		
 		// Replace non-alphanumeric characters except apostrophe with empty string
-		String cleanedWord = Pattern.compile(REGEX).matcher(trimmedWord).replaceAll("");
+		String cleanedWord = CLEAN_REGEX.matcher(trimmedWord).replaceAll("");
 
 		return cleanedWord;
 	}

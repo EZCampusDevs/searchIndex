@@ -132,63 +132,61 @@ public abstract class SearchHandler
 		}
 	}
 	
-	public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId) {
-		ArrayList<CourseDataResult> ret = new ArrayList<>();
-		
-		try (Session session = HibernateUtil.getSessionFactory().openSession())
-		{
+public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId) {
+    ArrayList<CourseDataResult> ret = new ArrayList<>();
 
-		String[] words = { "Calculus", "II" };
+    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+        String[] words = { "Calculus", "II" };
 
         // prepare your LIKE clauses
         String whereClause = "";
         for (int i = 0; i < words.length; i++) {
-            whereClause += "tbl_word.word LIKE ? OR tbl_word.word LIKE ?";
+            whereClause += "tbl_word.word LIKE :wordStart" + i + " OR tbl_word.word LIKE :wordEnd" + i;
             if (i < words.length - 1) {
                 whereClause += " OR ";
             }
         }
 
-		String cQ = String.format("""
-			SELECT tbl_course_data.course_data_id, tbl_course_data.course_title , sum(tbl_word_course_data.count) as course_rank
+        String cQ = String.format("""
+            SELECT tbl_course_data.course_data_id, tbl_course_data.course_title , sum(tbl_word_course_data.count) as course_rank
 
-			FROM tbl_course_data 
-			INNER JOIN tbl_word_course_data USING (course_data_id)
-			INNER JOIN tbl_course USING (course_id)
-			INNER JOIN tbl_word using (word_id)
+            FROM tbl_course_data 
+            INNER JOIN tbl_word_course_data USING (course_data_id)
+            INNER JOIN tbl_course USING (course_id)
+            INNER JOIN tbl_word using (word_id)
 
+            WHERE (%s) AND tbl_course.term_id = :termId
 
-			WHERE (%s) AND tbl_course.term_id = ?
+            GROUP BY tbl_course_data.course_data_id 
 
-			GROUP BY tbl_course_data.course_data_id 
+            ORDER BY course_rank DESC
 
-			ORDER BY course_rank DESC
+            LIMIT 10 OFFSET 0
+        """, whereClause);
 
-			LIMIT 10 OFFSET 0
-		""", whereClause);
+        Query query = session.createNativeQuery(cQ);
 
-		Query query = session.createNativeQuery(cQ);
-
-        int j = 1;
-        for (String word : words) {
-            query.setParameter(j++, "%" + word);
-            query.setParameter(j++, word + "%");
+        for (int i = 0; i < words.length; i++) {
+            query.setParameter("wordStart" + i, "%" + words[i]);
+            query.setParameter("wordEnd" + i, words[i] + "%");
         }
 
-		query.setParameter(j, termId);
-		
-		List<Object[]> results = query.getResultList();
+        query.setParameter("termId", termId);
 
-        	for (Object[] result : results) {
+        List<Object[]> results = query.getResultList();
+
+        for (Object[] result : results) {
             System.out.printf("course_data_id: %d, course_title: %s, course_rank: %d%n",
                     result[0],
                     result[1],
                     result[2]);
-        	}
-		}
+        }
+    }
 
-		return ret;
-	}
+    return ret;
+}
+
 	
 	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{

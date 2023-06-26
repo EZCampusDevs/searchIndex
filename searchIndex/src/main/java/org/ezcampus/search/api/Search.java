@@ -53,7 +53,7 @@ public class Search
 				);
 			}
 			else { // ⚡ Performance Boosted by: Minno ⚡
-				results = SearchHandler.searchFuzzy2(
+				results = SearchHandler.searchNative(
 						requestData.getSearchTerm(), 
 						requestData.getPage(), 
 						requestData.getResultsPerPage(),

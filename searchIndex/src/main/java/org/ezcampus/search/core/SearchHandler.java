@@ -3,6 +3,7 @@ package org.ezcampus.search.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.System.ResourceLoader;
@@ -24,11 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class SearchHandler
 {
-	public static void main(String[] args)
-	{
+	// public static void main(String[] args)
+	// {
 
-		searchNative("", 0, 0, 0);
-	}
+	// 	searchNative("", 0, 0, 0);
+	// }
 
 	public static List<CourseDataResult> loadIn(List<CourseData> results, Session session)
 	{
@@ -137,11 +138,30 @@ public abstract class SearchHandler
 	
 public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId) {
     
-	ArrayList<CourseDataResult> ret = new ArrayList<>();
+	//! ############### Assertions: ###############
+
+    if (searchTerm.trim().length() < 3) {
+        return new ArrayList<>();
+    } //Trim and check if the entire searchTerm is lesser than 3
+
+
+	if(page < 0 || resultsPerPage < 1){
+		return new ArrayList<>();
+	} //Make sure Limit & Offsets make sense
+
+	//! ############### Filtering of searchTerm: ############### 
+
+	List<String> wordsVector = Arrays.stream(searchTerm.split("\\s+"))
+			.map(StringHelper::cleanWord)
+			.filter(word -> !word.isEmpty())
+			.collect(Collectors.toList());
+
+	String[] words = wordsVector.toArray(new String[0]);
+
+	ArrayList<CourseDataResult> CDR_Query = new ArrayList<>();
 
     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-        String[] words = { "Calculus", "II" };
 
         // prepare your LIKE clauses
         String whereClause = "";
@@ -166,7 +186,7 @@ public static List<CourseDataResult> searchNative(String searchTerm, int page, i
 
             ORDER BY course_rank DESC
 
-            LIMIT 10 OFFSET 0
+          	LIMIT :limit OFFSET :offset
         """, whereClause);
 
         Query query = session.createNativeQuery(cQ);
@@ -176,33 +196,38 @@ public static List<CourseDataResult> searchNative(String searchTerm, int page, i
             query.setParameter("wordEnd" + i, words[i] + "%");
         }
 
+
+		int pageOffset = resultsPerPage * (page - 1);	
+
+		//* Setting of named HQL placeholders here */
+
         query.setParameter("termId", termId);
+		query.setParameter("limit", resultsPerPage);
+		query.setParameter("offset", pageOffset);
 
         List<Object[]> results = query.getResultList();
 
-for (Object[] result : results) {
+		for (Object[] result : results) {
 
-	//Get matching course_data_id
+			//Get matching course_data_id
 
-    CourseData courseData = (CourseData) session.createQuery("FROM CourseData WHERE courseDataId = :cid", CourseData.class)
-        .setParameter("cid", result[0])
-        .uniqueResult();
+			CourseData courseData = (CourseData) session.createQuery("FROM CourseData WHERE courseDataId = :cid", CourseData.class)
+				.setParameter("cid", result[0])
+				.uniqueResult();
 
-	//Build a CDR object from it
+			//Build a CDR object from it
 
-	CourseDataResult cdr = loadSingleCDR(courseData, session);
-	ret.add(cdr);
+				CourseDataResult cdr = loadSingleCDR(courseData, session);
+				CDR_Query.add(cdr);
 
-    System.out.println("course_data_id: " + result[0]);
-    System.out.println("course_title: " + result[1]);
-    System.out.println("course_rank: " + result[2]);
-    System.out.println();
-}
+				System.out.println("course_data_id: " + result[0]);
+				System.out.println("course_title: " + result[1]);
+				System.out.println("course_rank: " + result[2]);
+				System.out.println();
+		}
     }
 
-	System.out.println("SUCCESS!!!");
-
-    return ret;
+    return CDR_Query;
 }
 
 	

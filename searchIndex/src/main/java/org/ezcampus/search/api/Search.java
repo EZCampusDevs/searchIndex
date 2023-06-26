@@ -124,6 +124,8 @@ public class Search
         List<Term> existingTerms = session.createQuery("FROM Term", Term.class).getResultList();
         String str = String.join(", ", existingTerms.stream().map(x -> x.toString()).toList());
         str += " ... oh yea, and your word is: "+p;
+		
+		List<CourseDataResult> x = SearchHandler.searchNative("calc II", 1, 1 ,1);
 
         return Response.status(Response.Status.OK).entity(str).build();
         

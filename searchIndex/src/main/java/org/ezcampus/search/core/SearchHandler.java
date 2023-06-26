@@ -24,35 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class SearchHandler
 {
-// 	public static void main(String[] args)
-// 	{
-// 		GlobalSettings.IS_DEBUG = true;
-// 		ResourceLoader.loadTinyLogConfig();
+	public static void main(String[] args)
+	{
 
-// 		String term = "calculus II";
-
-// 		Logger.info("");
-
-// //		List<CourseDataResult> results1 = searchExactWords(term, 1, 5, 202305);
-// 		long start = System.nanoTime();
-// 		List<CourseDataResult> results2 = searchFuzzy(term, 1, 5, 202305);
-// 		double elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
-// 		Logger.info("Finished searchFuzzy1 after {} seconds", elapsedTime);
-
-// 		start = System.nanoTime();
-// 		List<CourseDataResult> results3 = searchFuzzy2(term, 1, 5, 202305);
-// 		elapsedTime = (System.nanoTime() - start) / 1_000_000_000.0; // Convert nanoseconds to seconds
-// 		Logger.info("Finished searchFuzzy2 after {} seconds", elapsedTime);
-		
-// 		results2.forEach(x -> {
-// 			Logger.info(x);
-// 		});
-// 		Logger.info("");
-// 		results3.forEach(x -> {
-// 			Logger.info(x);
-// 		});
-
-// 	}
+		searchNative("", 0, 0, 0);
+	}
 
 	public static List<CourseDataResult> loadIn(List<CourseData> results, Session session)
 	{
@@ -125,7 +101,7 @@ public abstract class SearchHandler
 		ArrayList<CourseData> relevantCDs = new ArrayList<>();
 
 		if (searchTerm == null)
-			return new ArrayList<>();
+			return List.of();
 
 		// Calculate the offset based on the page number
 		int pageoffset = resultsPerPage * (page - 1);
@@ -156,6 +132,63 @@ public abstract class SearchHandler
 		}
 	}
 	
+	public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId) {
+		ArrayList<CourseDataResult> ret = new ArrayList<>();
+		
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
+
+		String[] words = { "Calculus", "II" };
+
+        // prepare your LIKE clauses
+        String whereClause = "";
+        for (int i = 0; i < words.length; i++) {
+            whereClause += "tbl_word.word LIKE ? OR tbl_word.word LIKE ?";
+            if (i < words.length - 1) {
+                whereClause += " OR ";
+            }
+        }
+
+		String cQ = String.format("""
+			SELECT tbl_course_data.course_data_id, tbl_course_data.course_title , sum(tbl_word_course_data.count) as course_rank
+
+			FROM tbl_course_data 
+			INNER JOIN tbl_word_course_data USING (course_data_id)
+			INNER JOIN tbl_course USING (course_id)
+			INNER JOIN tbl_word using (word_id)
+
+
+			WHERE (%s) AND tbl_course.term_id = ?
+
+			GROUP BY tbl_course_data.course_data_id 
+
+			ORDER BY course_rank DESC
+
+			LIMIT 10 OFFSET 0
+		""", whereClause);
+
+		Query query = session.createNativeQuery(cQ);
+
+        int j = 1;
+        for (String word : words) {
+            query.setParameter(j++, "%" + word);
+            query.setParameter(j++, word + "%");
+        }
+
+		query.setParameter(j, termId);
+		
+		List<Object[]> results = query.getResultList();
+
+        	for (Object[] result : results) {
+            System.out.printf("course_data_id: %d, course_title: %s, course_rank: %d%n",
+                    result[0],
+                    result[1],
+                    result[2]);
+        	}
+		}
+
+		return ret;
+	}
 	
 	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{

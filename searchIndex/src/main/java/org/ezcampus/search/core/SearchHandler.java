@@ -51,22 +51,25 @@ public abstract class SearchHandler
 
 			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
 			
-			
-			
-//			String query = "SELECT cf, m FROM CourseFaculty cf JOIN Meeting m " +
-//			        "WHERE cf.courseDataId = :courseData AND m.courseDataId = :courseData";
-//
-//			List<Object[]> resultList = session.createQuery(query, Object[].class)
-//			        .setParameter("courseData", courseData)
-//			        .getResultList();
-//
-//			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, resultList);
-			
-
 			cdr.add(combinedEntry);
 		}
 
 		return cdr;
+	}
+
+	public static CourseDataResult loadSingleCDR(CourseData courseData, Session session){
+			Course course = courseData.getCourse();
+
+			List<CourseFaculty> facultyQuery = session.createQuery(
+					"SELECT cf FROM CourseFaculty cf WHERE cf.courseDataId = :courseData", CourseFaculty.class
+			).setParameter("courseData", courseData).getResultList();
+
+			List<Meeting> meetingQuery = session
+					.createQuery("SELECT m FROM Meeting m WHERE m.courseDataId = :courseData", Meeting.class)
+					.setParameter("courseData", courseData).getResultList();
+
+			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
+			return combinedEntry;
 	}
 
 	public static void rank(List<WordMap> matchingEntries, List<CourseData> relevantCDs)
@@ -133,7 +136,8 @@ public abstract class SearchHandler
 	}
 	
 public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId) {
-    ArrayList<CourseDataResult> ret = new ArrayList<>();
+    
+	ArrayList<CourseDataResult> ret = new ArrayList<>();
 
     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
@@ -177,12 +181,26 @@ public static List<CourseDataResult> searchNative(String searchTerm, int page, i
         List<Object[]> results = query.getResultList();
 
 for (Object[] result : results) {
+
+	//Get matching course_data_id
+
+    CourseData courseData = (CourseData) session.createQuery("FROM CourseData WHERE courseDataId = :cid", CourseData.class)
+        .setParameter("cid", result[0])
+        .uniqueResult();
+
+	//Build a CDR object from it
+
+	CourseDataResult cdr = loadSingleCDR(courseData, session);
+	ret.add(cdr);
+
     System.out.println("course_data_id: " + result[0]);
     System.out.println("course_title: " + result[1]);
     System.out.println("course_rank: " + result[2]);
     System.out.println();
 }
     }
+
+	System.out.println("SUCCESS!!!");
 
     return ret;
 }

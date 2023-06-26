@@ -176,12 +176,12 @@ public static List<CourseDataResult> searchNative(String searchTerm, int page, i
 
         List<Object[]> results = query.getResultList();
 
-        for (Object[] result : results) {
-            System.out.printf("course_data_id: %d, course_title: %s, course_rank: %d%n",
-                    result[0],
-                    result[1],
-                    result[2]);
-        }
+for (Object[] result : results) {
+    System.out.println("course_data_id: " + result[0]);
+    System.out.println("course_title: " + result[1]);
+    System.out.println("course_rank: " + result[2]);
+    System.out.println();
+}
     }
 
     return ret;

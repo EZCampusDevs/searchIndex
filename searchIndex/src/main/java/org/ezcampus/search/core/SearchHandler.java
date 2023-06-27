@@ -9,6 +9,7 @@ import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.System.ResourceLoader;
 import org.ezcampus.search.core.models.response.CourseDataResult;
 import org.ezcampus.search.data.StringHelper;
+import org.ezcampus.search.data.exceptions.ThreadShuttingDownException;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
@@ -20,17 +21,8 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.tinylog.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public abstract class SearchHandler
 {
-	// public static void main(String[] args)
-	// {
-
-	// 	searchNative("", 0, 0, 0);
-	// }
-
 	public static List<CourseDataResult> loadIn(List<CourseData> results, Session session)
 	{
 		ArrayList<CourseDataResult> cdr = new ArrayList<>(results.size());
@@ -51,26 +43,27 @@ public abstract class SearchHandler
 					.setParameter("courseData", courseData).getResultList();
 
 			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
-			
+
 			cdr.add(combinedEntry);
 		}
 
 		return cdr;
 	}
 
-	public static CourseDataResult loadSingleCDR(CourseData courseData, Session session){
-			Course course = courseData.getCourse();
+	public static CourseDataResult loadSingleCDR(CourseData courseData, Session session)
+	{
+		Course course = courseData.getCourse();
 
-			List<CourseFaculty> facultyQuery = session.createQuery(
-					"SELECT cf FROM CourseFaculty cf WHERE cf.courseDataId = :courseData", CourseFaculty.class
-			).setParameter("courseData", courseData).getResultList();
+		List<CourseFaculty> facultyQuery = session
+				.createQuery("SELECT cf FROM CourseFaculty cf WHERE cf.courseDataId = :courseData", CourseFaculty.class)
+				.setParameter("courseData", courseData).getResultList();
 
-			List<Meeting> meetingQuery = session
-					.createQuery("SELECT m FROM Meeting m WHERE m.courseDataId = :courseData", Meeting.class)
-					.setParameter("courseData", courseData).getResultList();
+		List<Meeting> meetingQuery = session
+				.createQuery("SELECT m FROM Meeting m WHERE m.courseDataId = :courseData", Meeting.class)
+				.setParameter("courseData", courseData).getResultList();
 
-			CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
-			return combinedEntry;
+		CourseDataResult combinedEntry = new CourseDataResult(course, courseData, facultyQuery, meetingQuery);
+		return combinedEntry;
 	}
 
 	public static void rank(List<WordMap> matchingEntries, List<CourseData> relevantCDs)
@@ -85,7 +78,7 @@ public abstract class SearchHandler
 			{
 				if (relevantCD.equals(courseData))
 				{
-					relevantCD.ranking += wordMap.getCount(); //TODO: Replace this with Leveinsthein distance?
+					relevantCD.ranking += wordMap.getCount(); // TODO: Replace this with Leveinsthein distance?
 					isNewEntry = false;
 					break;
 				}
@@ -98,7 +91,6 @@ public abstract class SearchHandler
 		}
 	}
 
-	
 	public static List<CourseDataResult> searchFuzzy2(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index
@@ -112,110 +104,115 @@ public abstract class SearchHandler
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
-			Arrays.stream(searchTerm.split("\\s+")) //Stream words in the search term "CALC II" -> Stream of strings [ "CALC" , "II"]
-				.map(StringHelper::cleanWord) 
-				.filter(word -> !word.isEmpty() && word.length() >= 3) 
-				.forEach(word -> 
-				{
-					String query = "SELECT wm FROM WordMap wm " +
-					        "JOIN wm.word w " +
-					        "JOIN wm.courseData cd " +
-					        "JOIN cd.course c " +
-					        "JOIN c.term t " +
-					        "WHERE w.word LIKE :targetWord " +
-					        "AND t.termId = :termId";
-					
-					List<WordMap> matchingEntries = session.createQuery(query, WordMap.class)
-					        .setParameter("targetWord", "%" + word + "%")
-					        .setParameter("termId", termId)
-					        .getResultList();
-					
-					rank(matchingEntries, relevantCDs);
-				});
+			Arrays.stream(searchTerm.split("\\s+")) // Stream words in the search term "CALC II" -> Stream of strings [
+													// "CALC" , "II"]
+					.map(StringHelper::cleanWord).filter(word -> !word.isEmpty() && word.length() >= 3)
+					.forEach(word -> {
+						String query = "SELECT wm FROM WordMap wm " + "JOIN wm.word w " + "JOIN wm.courseData cd "
+								+ "JOIN cd.course c " + "JOIN c.term t " + "WHERE w.word LIKE :targetWord "
+								+ "AND t.termId = :termId";
+
+						List<WordMap> matchingEntries = session.createQuery(query, WordMap.class)
+								.setParameter("targetWord", "%" + word + "%").setParameter("termId", termId)
+								.getResultList();
+
+						rank(matchingEntries, relevantCDs);
+					});
 			return loadIn(relevantCDs, session);
 		}
 	}
+
 	
-public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId) {
-    
-	//! ############### Assertions: ###############
+	public static List<CourseDataResult> searchNative(String searchTerm, int page, int resultsPerPage, int termId)
+	{
 
-    if (searchTerm.trim().length() < 3) {
-        return new ArrayList<>();
-    } //Trim and check if the entire searchTerm is lesser than 3
+		// ! ############### Assertions: ###############
 
+		if (searchTerm.trim().length() < 3)
+		{
+			return new ArrayList<>();
+		} // Trim and check if the entire searchTerm is lesser than 3
 
-	if(page < 0 || resultsPerPage < 1){
-		return new ArrayList<>();
-	} //Make sure Limit & Offsets make sense
+		if (page <= 0 || resultsPerPage < 1)
+		{
+			return new ArrayList<>();
+		} // Make sure Limit & Offsets make sense
 
-	//! ############### Filtering of searchTerm: ############### 
+		// ! ############### Filtering of searchTerm: ###############
 
-	List<String> wordsVector = Arrays.stream(searchTerm.split("\\s+"))
-			.map(StringHelper::cleanWord)
-			.filter(word -> !word.isEmpty())
-			.collect(Collectors.toList());
+		String[] words = Arrays.stream(searchTerm.split("\\s+"))
+				.map(StringHelper::cleanWord)
+				.filter(word -> !word.isEmpty())
+				.toArray(String[]::new);
 
-	String[] words = wordsVector.toArray(new String[0]);
+		ArrayList<CourseDataResult> CDR_Query = new ArrayList<>();
+		
+		// prepare your LIKE clauses
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < words.length; i++)
+		{
+			sb.append("tbl_word.word LIKE :wordStart" + i + " OR tbl_word.word LIKE :wordEnd" + i);
+			
+			if (i < words.length - 1)
+			{
+				sb.append(" OR ");
+			}
+		}
+		
+		String whereClause = sb.toString();
 
-	ArrayList<CourseDataResult> CDR_Query = new ArrayList<>();
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
 
-    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			String cQ = String.format(
+					"""
+							    SELECT tbl_course_data.course_data_id, tbl_course_data.course_title , sum(tbl_word_course_data.count) as course_rank
 
+							    FROM tbl_course_data
+							    INNER JOIN tbl_word_course_data USING (course_data_id)
+							    INNER JOIN tbl_course USING (course_id)
+							    INNER JOIN tbl_word USING (word_id)
 
-        // prepare your LIKE clauses
-        String whereClause = "";
-        for (int i = 0; i < words.length; i++) {
-            whereClause += "tbl_word.word LIKE :wordStart" + i + " OR tbl_word.word LIKE :wordEnd" + i;
-            if (i < words.length - 1) {
-                whereClause += " OR ";
-            }
-        }
+							    WHERE (%s) AND tbl_course.term_id = :termId
 
-        String cQ = String.format("""
-            SELECT tbl_course_data.course_data_id, tbl_course_data.course_title , sum(tbl_word_course_data.count) as course_rank
+							    GROUP BY tbl_course_data.course_data_id
 
-            FROM tbl_course_data 
-            INNER JOIN tbl_word_course_data USING (course_data_id)
-            INNER JOIN tbl_course USING (course_id)
-            INNER JOIN tbl_word using (word_id)
+							    ORDER BY course_rank DESC
 
-            WHERE (%s) AND tbl_course.term_id = :termId
+							  	LIMIT :limit OFFSET :offset
+							""",
+					whereClause
+			);
 
-            GROUP BY tbl_course_data.course_data_id 
+			
+			Query<Object[]> query = session.createNativeQuery(cQ, Object[].class);
 
-            ORDER BY course_rank DESC
+			for (int i = 0; i < words.length; i++)
+			{
+				query.setParameter("wordStart" + i, "%" + words[i]);
+				query.setParameter("wordEnd" + i, words[i] + "%");
+			}
 
-          	LIMIT :limit OFFSET :offset
-        """, whereClause);
+			int pageOffset = resultsPerPage * (page - 1);
 
-        Query query = session.createNativeQuery(cQ);
+			// * Setting of named HQL placeholders here */
 
-        for (int i = 0; i < words.length; i++) {
-            query.setParameter("wordStart" + i, "%" + words[i]);
-            query.setParameter("wordEnd" + i, words[i] + "%");
-        }
+			query.setParameter("termId", termId);
+			query.setParameter("limit", resultsPerPage);
+			query.setParameter("offset", pageOffset);
 
+			List<Object[]> results = query.getResultList();
 
-		int pageOffset = resultsPerPage * (page - 1);	
+			for (Object[] result : results)
+			{
 
-		//* Setting of named HQL placeholders here */
+				// Get matching course_data_id
 
-        query.setParameter("termId", termId);
-		query.setParameter("limit", resultsPerPage);
-		query.setParameter("offset", pageOffset);
+				CourseData courseData = (CourseData) session
+						.createQuery("FROM CourseData WHERE courseDataId = :cid", CourseData.class)
+						.setParameter("cid", result[0]).uniqueResult();
 
-        List<Object[]> results = query.getResultList();
-
-		for (Object[] result : results) {
-
-			//Get matching course_data_id
-
-			CourseData courseData = (CourseData) session.createQuery("FROM CourseData WHERE courseDataId = :cid", CourseData.class)
-				.setParameter("cid", result[0])
-				.uniqueResult();
-
-			//Build a CDR object from it
+				// Build a CDR object from it
 
 				CourseDataResult cdr = loadSingleCDR(courseData, session);
 				CDR_Query.add(cdr);
@@ -224,13 +221,12 @@ public static List<CourseDataResult> searchNative(String searchTerm, int page, i
 				System.out.println("course_title: " + result[1]);
 				System.out.println("course_rank: " + result[2]);
 				System.out.println();
+			}
 		}
-    }
 
-    return CDR_Query;
-}
+		return CDR_Query;
+	}
 
-	
 	public static List<CourseDataResult> searchFuzzy(String searchTerm, int page, int resultsPerPage, int termId)
 	{
 		// Look up in the word index
@@ -244,10 +240,8 @@ public static List<CourseDataResult> searchNative(String searchTerm, int page, i
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
-			Arrays.stream(searchTerm.split("\\s+"))
-				.map(StringHelper::cleanWord)
-				.filter(word -> !word.isEmpty() && word.length() >= 3)
-				.forEach(word -> {
+			Arrays.stream(searchTerm.split("\\s+")).map(StringHelper::cleanWord)
+					.filter(word -> !word.isEmpty() && word.length() >= 3).forEach(word -> {
 						List<Word> matchingWordList = session
 								.createQuery("FROM Word w WHERE CONCAT('%', w.word, '%') LIKE :targetWord", Word.class)
 								.setParameter("targetWord", "%" + word + "%").getResultList();

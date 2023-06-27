@@ -22,7 +22,7 @@ public class Meeting {
     @Column(name = "meeting_id")
     private Integer meetingId;
 
-    @Column(name = "meeting_hash", unique = true)
+    @Column(name = "meeting_hash", unique = true, columnDefinition = "BINARY(255)")
     private byte[] meetingHash;
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -54,10 +54,10 @@ public class Meeting {
     @Column(name = "meeting_type_description")
     private String meetingTypeDescription;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", columnDefinition = "DATE")
     private Date startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", columnDefinition = "DATE")
     private Date endDate;
 
     @Column(name = "begin_time")

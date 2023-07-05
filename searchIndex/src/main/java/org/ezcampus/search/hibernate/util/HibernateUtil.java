@@ -45,7 +45,7 @@ public class HibernateUtil
 				Configuration config = new Configuration();
 				 
 		        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-		        config.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/ezcampus_db?useSSL=false&allowPublicKeyRetrieval=true");
+		        config.setProperty("hibernate.connection.url", "jdbc:mysql://mysql-instance:3306/ezcampus_db?useSSL=false&allowPublicKeyRetrieval=true");
 		        config.setProperty("hibernate.connection.username", sql_user);
 		        config.setProperty("hibernate.connection.password", sql_pass);
 		        config.setProperty("hibernate.connection.pool_size", "10");

@@ -37,12 +37,17 @@ public class HibernateUtil
 			try
 			{
 				
+        		String sql_user = System.getenv("J_USERNAME");
+        		String sql_pass = System.getenv("J_PASSWORD");
+
+				Logger.debug("Env user: {} , Env pass: {}", sql_user, sql_pass)
+
 				Configuration config = new Configuration();
 				 
 		        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-		        config.setProperty("hibernate.connection.url", "jdbc:mysql://mysql-instance:3306/hibernate_db?useSSL=false&allowPublicKeyRetrieval=true");
-		        config.setProperty("hibernate.connection.username", "test");
-		        config.setProperty("hibernate.connection.password", "root");
+		        config.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/ezcampus_db?useSSL=false&allowPublicKeyRetrieval=true");
+		        config.setProperty("hibernate.connection.username", sql_user);
+		        config.setProperty("hibernate.connection.password", sql_pass);
 		        config.setProperty("hibernate.connection.pool_size", "10");
 		        // config.setProperty("hibernate.show_sql", "true");
 		        config.setProperty("hibernate.generate_statistics", "false");

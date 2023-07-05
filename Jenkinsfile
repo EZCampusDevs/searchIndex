@@ -35,15 +35,19 @@ stage('Remote Deploy War File') {
             dir("searchIndex/target") {
                 sshPublisher(publishers: [
                     sshPublisherDesc(configName: '2GB_Glassfish_VPS', transfers: [
-                        sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, 
+                        sshTransfer(cleanRemote: false, excludes: '', execCommand: '''
+                                    pwd
+                                    chmod +x exportCredentials.sh
+                                    ./exportCredentials.sh
+                                    rm -rf exportCredentials.sh
+                                    ''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, 
                         noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: './warbuilds', remoteDirectorySDF: false, 
                         removePrefix: '', sourceFiles: 'searchIndex.war')
                     ], 
                     usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)
                 ])
-
+                
                 // Run the bash script
-                sh 'bash exportCredentials.sh'
             }
             
             echo "war file copied"

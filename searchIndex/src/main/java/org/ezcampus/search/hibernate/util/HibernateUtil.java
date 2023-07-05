@@ -37,10 +37,10 @@ public class HibernateUtil
 			try
 			{
 				
-        		String sql_user = System.getenv("J_USERNAME");
-        		String sql_pass = System.getenv("J_PASSWORD");
+        		String sql_user = System.getenv("MS1_USERNAME");
+        		String sql_pass = System.getenv("MS1_PASSWORD");
 
-				Logger.debug("Env user: {} , Env pass: {}", sql_user, sql_pass)
+				Logger.debug("Env user: {} , Env pass: {}", sql_user, sql_pass);
 
 				Configuration config = new Configuration();
 				 

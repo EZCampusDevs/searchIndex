@@ -20,22 +20,37 @@ pipeline {
             }
         }
         
-        stage('Remote Deploy War File') {
-            steps {
-                dir("searchIndex/target"){
-                    sshPublisher(publishers: [
-                        sshPublisherDesc(configName: '2GB_Glassfish_VPS', transfers: [
-                            sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, 
-                            noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: './warbuilds', remoteDirectorySDF: false, 
-                            removePrefix: '', sourceFiles: 'searchIndex.war')
-                        ], 
-                        usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)
-                    ])
-                }
-                
-                echo "war file copied"
+stage('Remote Deploy War File') {
+    steps {
+
+        withCredentials([usernamePassword(credentialsId: 'MYSQL_USER_PASS_1', passwordVariable: 'MS1_PASSWORD', usernameVariable: 'MS1_USERNAME')]) {
+
+            // Write the bash script to a file
+            writeFile file: 'exportCredentials.sh', text: '''
+            #!/bin/bash
+            export MS1_USERNAME=${MS1_USERNAME}
+            export MS1_PASSWORD=${MS1_PASSWORD}
+            '''
+
+            dir("searchIndex/target") {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(configName: '2GB_Glassfish_VPS', transfers: [
+                        sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, 
+                        noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: './warbuilds', remoteDirectorySDF: false, 
+                        removePrefix: '', sourceFiles: 'searchIndex.war')
+                    ], 
+                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)
+                ])
+
+                // Run the bash script
+                sh 'bash exportCredentials.sh'
             }
+            
+            echo "war file copied"
         }
+    }
+}
+
     }
     
         

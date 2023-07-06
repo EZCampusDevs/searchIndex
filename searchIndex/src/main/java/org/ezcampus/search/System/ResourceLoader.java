@@ -46,7 +46,7 @@ public class ResourceLoader
         
          Logger.info("dir {}", Paths.get(".").toAbsolutePath().toString());
         
-        final String TOKENS_PATH = "./tokens.json";
+        final String TOKENS_PATH = "./token.json";
         try {
             // Create ObjectMapper instance
             ObjectMapper objectMapper = new ObjectMapper();

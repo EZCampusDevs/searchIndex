@@ -15,5 +15,14 @@ public class GlobalSettings
     public static final Path LOGS_DIR_PATH = Paths.get(".", "logs");
 
     public static Boolean isLinux = false;
+    
+    public static String MySQL_User = "";
+    public static String  MySQL_Password = "";
+    
+    public static int Port = -1;
+    public static String  DB_Name = "";
+    public static String  Host = "";
+    
+
 
 }

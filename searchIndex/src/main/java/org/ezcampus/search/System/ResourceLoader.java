@@ -5,6 +5,11 @@ import org.tinylog.configuration.Configuration;
 
 import java.nio.file.Path;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.file.Paths;
+import java.util.Map;
+
+
 public class ResourceLoader
 {
     public static void loadTinyLogConfig()
@@ -36,4 +41,35 @@ public class ResourceLoader
             Logger.warn("Tried to update tinylog config, it was already set");
         }
     }
+    
+    public static void loadToken() {
+        final String TOKENS_PATH = "./tokens.json";
+        try {
+            // Create ObjectMapper instance
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // Read the tokens.json file
+            Map<?, ?> tokens = objectMapper.readValue(Paths.get(TOKENS_PATH).toFile(), Map.class);
+
+            // Extract the SQL username and password
+            GlobalSettings.MySQL_User = (String)tokens.get("username");
+            Logger.info("MySQL User Loaded: {}",GlobalSettings.MySQL_User );
+            
+            GlobalSettings.MySQL_Password = (String)tokens.get("password");
+            Logger.info("MySQL User Loaded: {}","******");
+
+            GlobalSettings.Port = (int)tokens.get("port");
+            Logger.info("Port: {}",GlobalSettings.Port );
+            
+            GlobalSettings.DB_Name = (String)tokens.get("db_name");
+            Logger.info("DB Name: {}",GlobalSettings.DB_Name );
+            
+            GlobalSettings.Host = (String)tokens.get("host");
+            Logger.info("DB Host: {}",GlobalSettings.Host );
+
+        } catch (Exception e) {
+            Logger.error(e);
+        }
+    }
+
 }

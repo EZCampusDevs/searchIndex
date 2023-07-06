@@ -45,6 +45,8 @@ public class Program extends ResourceConfig
 		ResourceLoader.loadTinyLogConfig();
 		Thread.setDefaultUncaughtExceptionHandler(new TinylogHandler());
 
+                ResourceLoader.loadToken();
+                
 		Logger.info("{} starting...", GlobalSettings.BRAND_LONG);
 		Logger.info("Running as debug: {}", GlobalSettings.IS_DEBUG);
 		

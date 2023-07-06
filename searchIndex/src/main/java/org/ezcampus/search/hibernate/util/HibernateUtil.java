@@ -3,6 +3,7 @@ package org.ezcampus.search.hibernate.util;
 
 
 import java.io.File;
+import org.ezcampus.search.System.GlobalSettings;
 
 import org.ezcampus.search.hibernate.entity.ClassType;
 import org.ezcampus.search.hibernate.entity.Course;
@@ -21,6 +22,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.tinylog.Logger;
 
+
+
 public class HibernateUtil
 {
 	private static StandardServiceRegistry registry;
@@ -37,17 +40,15 @@ public class HibernateUtil
 			try
 			{
 				
-        		String sql_user = System.getenv("MS1_USERNAME");
-        		String sql_pass = System.getenv("MS1_PASSWORD");
 
-				Logger.debug("Env user: {} , Env pass: {}", sql_user, sql_pass);
+				Logger.debug("Env user: {} , Env pass: {}", GlobalSettings.MySQL_User, "****");
 
 				Configuration config = new Configuration();
 				 
 		        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-		        config.setProperty("hibernate.connection.url", "jdbc:mysql://mysql-instance:3306/ezcampus_db?useSSL=false&allowPublicKeyRetrieval=true");
-		        config.setProperty("hibernate.connection.username", sql_user);
-		        config.setProperty("hibernate.connection.password", sql_pass);
+		        config.setProperty("hibernate.connection.url", "jdbc:mysql://"+GlobalSettings.Host+":"+GlobalSettings.Port+"/"+GlobalSettings.DB_Name+"?useSSL=false&allowPublicKeyRetrieval=true");
+		        config.setProperty("hibernate.connection.username", GlobalSettings.MySQL_User);
+		        config.setProperty("hibernate.connection.password", GlobalSettings.MySQL_Password);
 		        config.setProperty("hibernate.connection.pool_size", "10");
 		        // config.setProperty("hibernate.show_sql", "true");
 		        config.setProperty("hibernate.generate_statistics", "false");

@@ -61,7 +61,7 @@ public class ResourceLoader
             GlobalSettings.MySQL_Password = (String)tokens.get("password");
             Logger.info("MySQL User Loaded: {}","******");
 
-            GlobalSettings.Port = (int)tokens.get("port");
+            GlobalSettings.Port = (String) tokens.get("port");
             Logger.info("Port: {}",GlobalSettings.Port );
             
             GlobalSettings.DB_Name = (String)tokens.get("db_name");

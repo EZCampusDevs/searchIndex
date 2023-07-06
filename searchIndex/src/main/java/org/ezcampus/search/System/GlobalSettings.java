@@ -19,7 +19,7 @@ public class GlobalSettings
     public static String MySQL_User = "";
     public static String  MySQL_Password = "";
     
-    public static int Port = -1;
+    public static String Port = "";
     public static String  DB_Name = "";
     public static String  Host = "";
     

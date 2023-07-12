@@ -21,8 +21,6 @@ public class EndpointCommon
 {
 	private final ObjectMapper JSON_MAPPER = new ObjectMapper();
 	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
 	public Response heartBeat() 
 	{
 		HashMap<String, String> hm = new HashMap<String, String>();
@@ -39,5 +37,20 @@ public class EndpointCommon
 		}
 		
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response heartBeat1() 
+	{
+		return heartBeat();
+	}
+	
+	@GET
+	@Path("/heartbeat")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response heartBeat2() 
+	{
+		return heartBeat();
 	}
 }

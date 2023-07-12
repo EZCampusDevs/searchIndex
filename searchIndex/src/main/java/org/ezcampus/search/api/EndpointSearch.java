@@ -26,60 +26,58 @@ import jakarta.ws.rs.core.Response;
 import org.ezcampus.search.hibernate.entity.Term;
 import org.ezcampus.search.hibernate.entity.Word;
 
-
 @Path("/search")
-public class Search
+public class EndpointSearch
 {
 	private final ObjectMapper jsonMap = new ObjectMapper();
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRequestBody(String jsonPayload) {
-		try {
-
-			SearchQuery requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
-
-				
-			List<CourseDataResult> results;
-			
-			if (requestData.getSearchMethod())
-			{
-				results = SearchHandler.searchFuzzy(
-						requestData.getSearchTerm(), 
-						requestData.getPage(), 
-						requestData.getResultsPerPage(),
-						requestData.getTerm()
-				);
-			}
-			else { // ⚡ Performance Boosted by: Minno ⚡
-				results = SearchHandler.searchNative(
-						requestData.getSearchTerm(), 
-						requestData.getPage(), 
-						requestData.getResultsPerPage(),
-						requestData.getTerm()
-				);
-			}
-				
-
-			// Convert to JSON array string
-			try {
-				String jsonArray = jsonMap.writeValueAsString(results);
-
-				return Response.status(Response.Status.OK).entity(jsonArray).build(); // Response with 200 OK and data
-																						// (search results)
-
-			} catch (JsonProcessingException e) { //Error handling for JSON building of results
-				e.printStackTrace();
-			}
-
-			return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
-		} catch (IOException e) {
+	public Response getRequestBody(String jsonPayload)
+	{
+		SearchQuery requestData;
+		try
+		{
+			requestData = jsonMap.readValue(jsonPayload, SearchQuery.class);
+		}
+		catch (IOException e)
+		{
+			Logger.debug("Got bad json: {}", e);
 			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
 		}
+		
+		List<CourseDataResult> results;
+
+		if (requestData.getSearchMethod())
+		{
+			results = SearchHandler.searchFuzzy(
+					requestData.getSearchTerm(), requestData.getPage(), requestData.getResultsPerPage(),
+					requestData.getTerm()
+			);
+		}
+		else
+		{ // ⚡ Performance Boosted by: Minno ⚡
+			results = SearchHandler.searchNative(
+					requestData.getSearchTerm(), requestData.getPage(), requestData.getResultsPerPage(),
+					requestData.getTerm()
+			);
+		}
+
+
+		try
+		{
+			String jsonArray = jsonMap.writeValueAsString(results);
+			return Response.status(Response.Status.OK).entity(jsonArray).build();
+		}
+		catch (JsonProcessingException e)
+		{
+			Logger.error(e);
+			e.printStackTrace();
+		}
+
+		return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
 	}
-	
-	
 
 	@GET
 	@Path("orm")
@@ -110,29 +108,27 @@ public class Search
 //		return Response.status(Response.Status.NOT_FOUND).entity("not found").build();
 
 	}
-        
-        //Import all in Netbeans: CTRL + SHIFT + I
-        
-    @GET
-    @Path("dummy")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response getRequestDummy(@QueryParam("p") String p){
-    
-        try (Session session = HibernateUtil.getSessionFactory().openSession() )
-        {
-        
-        List<Term> existingTerms = session.createQuery("FROM Term", Term.class).getResultList();
-        String str = String.join(", ", existingTerms.stream().map(x -> x.toString()).toList());
-        str += " ... oh yea, and your word is: "+p;
-		
-		List<CourseDataResult> x = SearchHandler.searchNative("calc II", 1, 1 ,1);
 
-        return Response.status(Response.Status.OK).entity(str).build();
-        
-        }
+	// Import all in Netbeans: CTRL + SHIFT + I
 
+	@GET
+	@Path("dummy")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getRequestDummy(@QueryParam("p") String p)
+	{
 
-    }
-        
+		try (Session session = HibernateUtil.getSessionFactory().openSession())
+		{
+
+			List<Term> existingTerms = session.createQuery("FROM Term", Term.class).getResultList();
+			String str = String.join(", ", existingTerms.stream().map(x -> x.toString()).toList());
+			str += " ... oh yea, and your word is: " + p;
+
+			List<CourseDataResult> x = SearchHandler.searchNative("calc II", 1, 1, 1);
+
+			return Response.status(Response.Status.OK).entity(str).build();
+		}
+
+	}
+
 }
-

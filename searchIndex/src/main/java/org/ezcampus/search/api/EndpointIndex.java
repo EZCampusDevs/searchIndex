@@ -21,7 +21,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
 @Path("/index")
-public class Index
+public class EndpointIndex
 {
 	private final ObjectMapper JSON_MAPPER = new ObjectMapper();
 	
@@ -59,10 +59,8 @@ public class Index
 		ThreadCallCallback processDatabaseJob = new ProcessDatabaseJob();
 		
 		ThreadHandling.callToThread(processDatabaseJob);
-		
-        URI uri = UriBuilder.fromPath("/index/status").build();
 
-		return Response.seeOther(uri).build();
+		return Response.ok().build();
 	}
 	
 }

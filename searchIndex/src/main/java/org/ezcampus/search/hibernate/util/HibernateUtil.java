@@ -39,7 +39,6 @@ public class HibernateUtil
 		{
 			try
 			{
-				
 
 				Logger.debug("Env user: {} , Env pass: {}", GlobalSettings.MySQL_User, "****");
 

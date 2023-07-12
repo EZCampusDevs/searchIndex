@@ -27,40 +27,43 @@ public class DatabaseProcessing
 	private static long _processingStartedAt = System.currentTimeMillis();
 	private static long _processingEndedAtNano = System.nanoTime();
 	private static long _processingEndedAt = System.currentTimeMillis();
-	
+
 	public static boolean isProcessing()
 	{
 		return _isProcessing;
 	}
-	
-	public static long getProcessElapsedTime() 
+
+	public static long getProcessElapsedTime()
 	{
-		if(isProcessing())
+		if (isProcessing())
 		{
 			return System.nanoTime() - _processingStartedAtNano;
 		}
-		
+
 		return _processingEndedAtNano - _processingStartedAtNano;
 	}
-	
-	public static long getStartTimeNano() {
+
+	public static long getStartTimeNano()
+	{
 		return _processingStartedAtNano;
 	}
-	
-	public static long getStartTime() {
+
+	public static long getStartTime()
+	{
 		return _processingStartedAt;
 	}
 
-	public static long getEndTime() {
+	public static long getEndTime()
+	{
 		return _processingEndedAt;
 	}
-	
+
 	public static void main(String[] args) throws ThreadShuttingDownException
 	{
 		ResourceLoader.loadTinyLogConfig();
 		processLastScrape();
 	}
-	
+
 	public static void splitInsertWord(String value, CourseData courseData, Session session)
 	{
 		if (value == null)
@@ -74,19 +77,37 @@ public class DatabaseProcessing
 			}
 
 			String number = StringHelper.getRomanNumeralMapping(v);
-			
-			if (number != null) 
+
+			if (number != null)
 			{
 				Logger.debug("Inserting word link for value '{}'", number);
 				WordDAO.insertLinkWord(number, courseData, session);
 			}
-			
+
 			Logger.debug("Inserting word link for value '{}'", v);
 			WordDAO.insertLinkWord(v, courseData, session);
 		}
 	}
 
-	public static void processLastScrape()throws ThreadShuttingDownException
+	public static void processDatabase() throws ThreadShuttingDownException
+	{
+		long start = System.nanoTime();
+		
+		List<ScrapeHistory> hist = ScrapeHistoryDAO.getUnindexedScrapeHistory();
+		
+		for(ScrapeHistory s : hist) 
+		{
+			if(s.getHasBeenIndexed())
+				continue;
+			
+			_processScrape(s);
+		}
+		
+		long stopms = (long) ((System.nanoTime() - start) / 1e6);
+		Logger.info("Finished indexing after {}ms", stopms);
+	}
+
+	public static void processLastScrape() throws ThreadShuttingDownException
 	{
 		long start = System.nanoTime();
 
@@ -96,33 +117,25 @@ public class DatabaseProcessing
 
 		Logger.info("Finished indexing after {}ms", stopms);
 	}
-	
-	public static void _processLastScrape() throws ThreadShuttingDownException
-	{
-		if(isProcessing())
-		{
-			Logger.warn("Cannot process the database while processing is in progress");
-			return;
-		}
-		
-		ScrapeHistory lastScrape = ScrapeHistoryDAO.getNewestScrapeHistory();
 
-		if (lastScrape == null)
+	public static void _processScrape(ScrapeHistory scrape) throws ThreadShuttingDownException
+	{
+		if (scrape == null)
 		{
 			Logger.warn("Cannot index data because there is no known scrape history!");
 			return;
 		}
 
-		Logger.info("Last found scrape time was: {}", lastScrape.toString());
+		Logger.info("About to process scrape: {}", scrape.toString());
 
-		if (lastScrape.getHasBeenIndexed())
+		if (scrape.getHasBeenIndexed())
 		{
-			Logger.info("No data to process, last scrape time was already indexed.");
+			Logger.info("The scrape has already been indexed.");
 			return;
 		}
 
 		ThreadHandling.dieIfShuttingDown();
-		
+
 		int i = 0;
 		Transaction tx = null;
 
@@ -137,7 +150,7 @@ public class DatabaseProcessing
 //			final String HQL1 = "SELECT cd, c, t FROM CourseData cd JOIN cd.course c JOIN c.term t";
 			final String HQL1 = "FROM CourseData cd WHERE cd.scrapeId = :sid";
 			List<CourseData> courseData_Course_Term = session.createQuery(HQL1, CourseData.class)
-					.setParameter("sid", lastScrape).getResultList();
+					.setParameter("sid", scrape).getResultList();
 
 			int iteration = 0;
 
@@ -190,8 +203,8 @@ public class DatabaseProcessing
 			{
 				tx.commit();
 			}
-			
-			ScrapeHistoryDAO.setHasBeenIndexedById(lastScrape.getScrapeId(), true);
+
+			ScrapeHistoryDAO.setHasBeenIndexedById(scrape.getScrapeId(), true);
 		}
 		catch (HibernateException e)
 		{
@@ -211,6 +224,32 @@ public class DatabaseProcessing
 		}
 
 		Logger.info("Word & Word Map | Tables Loaded-in. Successfully Completed !");
+	}
+
+	public static void _processLastScrape() throws ThreadShuttingDownException
+	{
+		if (isProcessing())
+		{
+			Logger.warn("Cannot process the database while processing is in progress");
+			return;
+		}
+
+		ScrapeHistory lastScrape = ScrapeHistoryDAO.getNewestScrapeHistory();
+
+		if (lastScrape == null)
+		{
+			Logger.warn("Cannot index data because there is no known scrape history!");
+			return;
+		}
+
+		Logger.info("Last found scrape time was: {}", lastScrape.toString());
+
+		if (lastScrape.getHasBeenIndexed())
+		{
+			Logger.info("No data to process, last scrape time was already indexed.");
+			return;
+		}
+
 		return;
 	}
 }

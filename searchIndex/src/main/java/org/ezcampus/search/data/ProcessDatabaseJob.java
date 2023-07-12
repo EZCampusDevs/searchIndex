@@ -14,7 +14,7 @@ public class ProcessDatabaseJob extends ThreadCallCallback
 	@Override
 	protected void runWithParams(Object... args) throws ThreadShuttingDownException
 	{
-		DatabaseProcessing.processLastScrape();
+		DatabaseProcessing.processDatabase();
 	}
 
 }

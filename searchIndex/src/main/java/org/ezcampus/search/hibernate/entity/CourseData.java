@@ -24,17 +24,8 @@ public class CourseData {
 	@Column(name = "crn")
 	private String crn;
 
-	@Column(name = "id")
-	private Integer id;
-
 	@Column(name = "course_title")
 	private String courseTitle;
-
-	@Column(name = "subject")
-	private String subject;
-
-	@Column(name = "subject_long")
-	private String subjectLong;
 
 	@Column(name = "sequence_number")
 	private String sequenceNumber;
@@ -48,26 +39,14 @@ public class CourseData {
 	@Column(name = "maximum_enrollment")
 	private Integer maximumEnrollment;
 
-	@Column(name = "enrollment")
-	private Integer enrollment;
+	@Column(name = "current_enrollment")
+	private Integer currentEnrollment;
 
-	@Column(name = "seats_available")
-	private Integer seatsAvailable;
+	@Column(name = "maximum_waitlist")
+	private Integer maximumWaitlist;
 
-	@Column(name = "wait_capacity")
-	private Integer waitCapacity;
-
-	@Column(name = "wait_count")
-	private Integer waitCount;
-
-	@Column(name = "wait_available")
-	private Integer waitAvailable;
-
-	@Column(name = "credit_hour_high")
-	private Integer creditHourHigh;
-
-	@Column(name = "credit_hour_low")
-	private Integer creditHourLow;
+	@Column(name = "current_waitlist")
+	private Integer currentWaitlist;
 
 	@Column(name = "open_section")
 	private Boolean openSection;
@@ -78,11 +57,8 @@ public class CourseData {
 	@Column(name = "is_section_linked")
 	private Boolean isSectionLinked;
 
-	@Column(name = "instructional_method")
-	private String instructionalMethod;
-
-	@Column(name = "instructional_method_description")
-	private String instructionalMethodDescription;
+	@Column(name = "delivery")
+	private String delivery;
 
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "course_id", referencedColumnName = "course_id")
@@ -92,93 +68,266 @@ public class CourseData {
 	@JoinColumn(name = "class_type_id", referencedColumnName = "class_type_id")
 	private ClassType classType;
 
-	
-    @JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name = "subject_id", referencedColumnName = "subject_id")
+	private Subject subject;
+
+	@JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
     @ManyToOne(fetch=FetchType.LAZY)
     private ScrapeHistory scrapeId;
    
+	
+    public Integer getCourseDataId()
+	{
+		return courseDataId;
+	}
+
+
+
+	public void setCourseDataId(Integer courseDataId)
+	{
+		this.courseDataId = courseDataId;
+	}
+
+
+
+	public String getCrn()
+	{
+		return crn;
+	}
+
+
+
+	public void setCrn(String crn)
+	{
+		this.crn = crn;
+	}
+
+
+
+	public String getCourseTitle()
+	{
+		return courseTitle;
+	}
+
+
+
+	public void setCourseTitle(String courseTitle)
+	{
+		this.courseTitle = courseTitle;
+	}
+
+
+
+	public String getSequenceNumber()
+	{
+		return sequenceNumber;
+	}
+
+
+
+	public void setSequenceNumber(String sequenceNumber)
+	{
+		this.sequenceNumber = sequenceNumber;
+	}
+
+
+
+	public String getCampusDescription()
+	{
+		return campusDescription;
+	}
+
+
+
+	public void setCampusDescription(String campusDescription)
+	{
+		this.campusDescription = campusDescription;
+	}
+
+
+
+	public Integer getCreditHours()
+	{
+		return creditHours;
+	}
+
+
+
+	public void setCreditHours(Integer creditHours)
+	{
+		this.creditHours = creditHours;
+	}
+
+
+
+	public Integer getMaximumEnrollment()
+	{
+		return maximumEnrollment;
+	}
+
+
+
+	public void setMaximumEnrollment(Integer maximumEnrollment)
+	{
+		this.maximumEnrollment = maximumEnrollment;
+	}
+
+
+
+	public Integer getCurrentEnrollment()
+	{
+		return currentEnrollment;
+	}
+
+
+
+	public void setCurrentEnrollment(Integer currentEnrollment)
+	{
+		this.currentEnrollment = currentEnrollment;
+	}
+
+
+
+	public Integer getMaximumWaitlist()
+	{
+		return maximumWaitlist;
+	}
+
+
+
+	public void setMaximumWaitlist(Integer maximumWaitlist)
+	{
+		this.maximumWaitlist = maximumWaitlist;
+	}
+
+
+
+	public Integer getCurrentWaitlist()
+	{
+		return currentWaitlist;
+	}
+
+
+
+	public void setCurrentWaitlist(Integer currentWaitlist)
+	{
+		this.currentWaitlist = currentWaitlist;
+	}
+
+
+
+	public Boolean getOpenSection()
+	{
+		return openSection;
+	}
+
+
+
+	public void setOpenSection(Boolean openSection)
+	{
+		this.openSection = openSection;
+	}
+
+
+
+	public String getLinkIdentifier()
+	{
+		return linkIdentifier;
+	}
+
+
+
+	public void setLinkIdentifier(String linkIdentifier)
+	{
+		this.linkIdentifier = linkIdentifier;
+	}
+
+
+
+	public Boolean getIsSectionLinked()
+	{
+		return isSectionLinked;
+	}
+
+
+
+	public void setIsSectionLinked(Boolean isSectionLinked)
+	{
+		this.isSectionLinked = isSectionLinked;
+	}
+
+
+
+	public String getDelivery()
+	{
+		return delivery;
+	}
+
+
+
+	public void setDelivery(String delivery)
+	{
+		this.delivery = delivery;
+	}
+
+
+
+	public Course getCourse()
+	{
+		return course;
+	}
+
+
+
+	public void setCourse(Course course)
+	{
+		this.course = course;
+	}
+
+
+
+	public Subject getSubject()
+	{
+		return subject;
+	}
+
+
+
+	public void setSubject(Subject subject)
+	{
+		this.subject = subject;
+	}
+
+
+
+	public ScrapeHistory getScrapeId()
+	{
+		return scrapeId;
+	}
+
+
+
+	public void setScrapeId(ScrapeHistory scrapeId)
+	{
+		this.scrapeId = scrapeId;
+	}
+
+
+
+	public void setClassType(ClassType classType)
+	{
+		this.classType = classType;
+	}
+
+
     
     // Transient makes it invisible to the ORM, but still can be used in instance
     
     @Transient
     public int ranking = 1;
     
-	
-	public Integer getCourseDataId() {
-		return courseDataId;
-	}
-	
-	public Course getCourse() {
-		return course;
-	}
 
-	public void setCourseDataId(Integer courseDataId) {
-		this.courseDataId = courseDataId;
-	}
-
-	public String getCrn() {
-		return crn;
-	}
-
-	public void setCrn(String crn) {
-		this.crn = crn;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getCourseTitle() {
-		return courseTitle;
-	}
-
-	public void setCourseTitle(String courseTitle) {
-		this.courseTitle = courseTitle;
-	}
-
-	public String getSubject() {
-		return subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
-	public String getSubjectLong() {
-		return subjectLong;
-	}
-
-	public void setSubjectLong(String subjectLong) {
-		this.subjectLong = subjectLong;
-	}
-
-	public String getSequenceNumber() {
-		return sequenceNumber;
-	}
-
-	public void setSequenceNumber(String sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
-	}
-
-	public String getCampusDescription() {
-		return campusDescription;
-	}
-
-	public void setCampusDescription(String campusDescription) {
-		this.campusDescription = campusDescription;
-	}
-	
-	public String getInstructionalMethodDescription() {
-		return this.instructionalMethodDescription;
-	}
-
-	public Integer getCreditHours() {
-		return creditHours;
-	}
 	
 	public String getClassType() {
 		return this.classType.getClassType();

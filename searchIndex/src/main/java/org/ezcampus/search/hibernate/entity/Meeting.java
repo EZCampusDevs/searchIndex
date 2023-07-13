@@ -42,12 +42,6 @@ public class Meeting {
     @Column(name = "building_description")
     private String buildingDescription;
 
-    @Column(name = "campus")
-    private String campus;
-
-    @Column(name = "campus_description")
-    private String campusDescription;
-
     @Column(name = "meeting_type")
     private String meetingType;
 
@@ -155,26 +149,6 @@ public class Meeting {
 	public void setBuildingDescription(String buildingDescription)
 	{
 		this.buildingDescription = buildingDescription;
-	}
-
-	public String getCampus()
-	{
-		return campus;
-	}
-
-	public void setCampus(String campus)
-	{
-		this.campus = campus;
-	}
-
-	public String getCampusDescription()
-	{
-		return campusDescription;
-	}
-
-	public void setCampusDescription(String campusDescription)
-	{
-		this.campusDescription = campusDescription;
 	}
 
 	public String getMeetingType()

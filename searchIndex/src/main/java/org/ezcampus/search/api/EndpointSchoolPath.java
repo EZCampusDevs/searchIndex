@@ -73,7 +73,9 @@ public class EndpointSchoolPath
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSchoolInfo(@PathParam("school_id") Integer school_id) 
 	{
-		if(school_id <= 0) {
+		Logger.debug("SchoolID {}", school_id);
+		
+		if(school_id == null || school_id <= 0) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity("School Id Cannot be <= 0")
 					.build();

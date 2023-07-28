@@ -26,7 +26,7 @@ public class SchoolDAO
 	
 	public static School schoolFromID(Session session, int school_id) 
 	{
-		return session.createQuery("FROM School s WHERE s.school_id = :sN", School.class)
+		return session.createQuery("FROM School s WHERE s.schoolId = :sN", School.class)
 				.setParameter("sN", school_id)
 				.getSingleResultOrNull();
 	}

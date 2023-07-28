@@ -68,7 +68,7 @@ public class EndpointSchoolPath
 	}
 	
 
-	@Path("{school_Id}")
+	@Path("{school_id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSchoolInfo(@PathParam("school_id") int school_id) 

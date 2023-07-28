@@ -22,5 +22,7 @@ public class School {
     
     @Column(name = "subdomain", length = 64)
     private String subdomain;
-
+    
+    @Column(name = "timezone", length = 64)
+    private String timezone;
 }

@@ -81,10 +81,14 @@ public class EndpointSchoolPath
 		
 		School s = SchoolDAO.schoolFromID(shcool_id);
 		
+		Logger.debug(s);
+		
 		if(s == null) {
 			return Response.status(Response.Status.NOT_FOUND)
 					.build();
 		}
+		
+		Logger.debug("School {}, id {} value {}", s, s.getSchoolId(), s.getSchoolUniqueValue());
 		
 		try
 		{

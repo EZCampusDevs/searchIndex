@@ -71,15 +71,15 @@ public class EndpointSchoolPath
 	@Path("{school_Id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getSchoolInfo(@PathParam("school_id") int shcool_id) 
+	public Response getSchoolInfo(@PathParam("school_id") int school_id) 
 	{
-		if(shcool_id <= 0) {
+		if(school_id <= 0) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity("School Id Cannot be <= 0")
 					.build();
 		}
 		
-		School s = SchoolDAO.schoolFromID(shcool_id);
+		School s = SchoolDAO.schoolFromID(school_id);
 		
 		Logger.debug(s);
 		

@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 //Models
-import org.ezcampus.search.core.models.request.TermsQuery;
+import org.ezcampus.search.core.models.request.SchoolQuery;
+import org.ezcampus.search.hibernate.entity.School;
 //Hibernate Entities:
 import org.ezcampus.search.hibernate.entity.Term;
 import org.ezcampus.search.hibernate.entityDAO.SchoolDAO;
@@ -14,8 +15,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -39,17 +42,79 @@ import jakarta.ws.rs.core.Response;
 public class EndpointSchoolPath
 {
 	private final ObjectMapper jsonMap = new ObjectMapper();
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getSchools() 
+	{
+		List<School> schools = SchoolDAO.getAllSchools();
+		
+		try
+		{
+			String jsonArray = jsonMap.writeValueAsString(schools);
+			
+			return Response.status(Response.Status.OK)
+					.entity(jsonArray)
+					.build();
+		}
+		catch (JsonProcessingException e)
+		{
+			Logger.error(e);
+			e.printStackTrace();
+		}
+		
+		return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.build();
+	}
+	
 
+	@Path("{school_Id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getSchoolInfo(@PathParam("school_id") int shcool_id) 
+	{
+		if(shcool_id <= 0) {
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity("School Id Cannot be <= 0")
+					.build();
+		}
+		
+		School s = SchoolDAO.schoolFromID(shcool_id);
+		
+		if(s == null) {
+			return Response.status(Response.Status.NOT_FOUND)
+					.build();
+		}
+		
+		try
+		{
+			String jsonArray = jsonMap.writeValueAsString(s);
+			
+			return Response.status(Response.Status.OK)
+					.entity(jsonArray)
+					.build();
+		}
+		catch (JsonProcessingException e)
+		{
+			Logger.error(e);
+			e.printStackTrace();
+		}
+		
+		return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.build();
+		
+	}
+	
 	@Path("term")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getRequestBody(String jsonPayload)
 	{
-		TermsQuery requestData;
+		SchoolQuery requestData;
 		try
 		{
-			requestData = jsonMap.readValue(jsonPayload, TermsQuery.class);
+			requestData = jsonMap.readValue(jsonPayload, SchoolQuery.class);
 		}
 		catch (IOException e)
 		{

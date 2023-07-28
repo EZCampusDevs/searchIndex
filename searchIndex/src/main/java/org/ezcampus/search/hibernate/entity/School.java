@@ -1,6 +1,8 @@
 package org.ezcampus.search.hibernate.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,4 +27,49 @@ public class School {
     
     @Column(name = "timezone", length = 64)
     private String timezone;
+
+    
+    @JsonGetter
+	public Integer getSchoolId()
+	{
+		return schoolId;
+	}
+
+	public void setSchoolId(Integer schoolId)
+	{
+		this.schoolId = schoolId;
+	}
+
+	@JsonGetter
+	public String getSchoolUniqueValue()
+	{
+		return schoolUniqueValue;
+	}
+
+	public void setSchoolUniqueValue(String schoolUniqueValue)
+	{
+		this.schoolUniqueValue = schoolUniqueValue;
+	}
+
+	@JsonGetter
+	public String getSubdomain()
+	{
+		return subdomain;
+	}
+
+	public void setSubdomain(String subdomain)
+	{
+		this.subdomain = subdomain;
+	}
+
+	@JsonGetter
+	public String getTimezone()
+	{
+		return timezone;
+	}
+
+	public void setTimezone(String timezone)
+	{
+		this.timezone = timezone;
+	}
 }

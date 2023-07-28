@@ -2,7 +2,7 @@ package org.ezcampus.search.core.models.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TermsQuery {
+public class SchoolQuery {
 
     @JsonProperty("school_name")
     private String schoolName;

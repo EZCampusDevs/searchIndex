@@ -21,7 +21,13 @@ public class ScrapeHistory
 
 	@Column(name = "scrape_time")
 	private Date scrapeTime;
-
+	
+	@Column(name = "scrape_time_finished")
+	private Date scrapeTimeFinished;
+	
+	@Column(name = "has_finished_scraping")
+	private Boolean hasFinishedScraping;
+	
 	@Column(name = "has_been_indexed")
 	private Boolean hasBeenIndexed;
 

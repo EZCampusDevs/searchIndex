@@ -3,14 +3,18 @@ package org.ezcampus.search.hibernate.util;
 
 
 import java.io.File;
-import org.ezcampus.search.System.GlobalSettings;
 
+import org.ezcampus.search.System.GlobalSettings;
+import org.ezcampus.search.hibernate.entity.Browser;
 import org.ezcampus.search.hibernate.entity.ClassType;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Faculty;
 import org.ezcampus.search.hibernate.entity.Meeting;
+import org.ezcampus.search.hibernate.entity.OperatingSystem;
+import org.ezcampus.search.hibernate.entity.Report;
+import org.ezcampus.search.hibernate.entity.ReportType;
 import org.ezcampus.search.hibernate.entity.School;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entity.Subject;
@@ -80,6 +84,10 @@ public class HibernateUtil
 		        config.addAnnotatedClass(ScrapeHistory.class);
 		        config.addAnnotatedClass(School.class);
 		        config.addAnnotatedClass(Subject.class);
+		        config.addAnnotatedClass(ReportType.class);
+		        config.addAnnotatedClass(Report.class);
+		        config.addAnnotatedClass(OperatingSystem.class);
+		        config.addAnnotatedClass(Browser.class);
 		        
 				sessionFactory = config.buildSessionFactory();
 				

@@ -1,10 +1,10 @@
 package org.ezcampus.search.System;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import org.tinylog.Logger;
@@ -49,6 +49,8 @@ public class ResourceLoader
     
     
     public static void loadEnv() {
+    	
+    	GlobalSettings.Log_File =  new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.log").format(new java.util.Date());
     	
     	String log_file = System.getenv("LOG_FILE");
     	String log_dir = System.getenv("LOG_DIR");

@@ -9,6 +9,9 @@ import org.ezcampus.search.data.threading.ThreadHandling;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.tinylog.Logger;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -38,15 +41,16 @@ public class Program extends ResourceConfig
 		ThreadHandling.shutdownAllThreads();
 	}
 
-	public Program()
+	public Program() throws StreamReadException, DatabindException, IOException
 	{
 		GlobalSettings.IS_DEBUG = true;
+		
+		ResourceLoader.loadEnv();
+		ResourceLoader.loadToken();
 
 		ResourceLoader.loadTinyLogConfig();
 		Thread.setDefaultUncaughtExceptionHandler(new TinylogHandler());
 
-                ResourceLoader.loadToken();
-                
 		Logger.info("{} starting...", GlobalSettings.BRAND_LONG);
 		Logger.info("Running as debug: {}", GlobalSettings.IS_DEBUG);
 		
@@ -54,10 +58,10 @@ public class Program extends ResourceConfig
 		ThreadHandling.initThreads();
 
 		// Set the package where the resources are located
-		packages("org.ezcampus.search.api");
+		this.packages("org.ezcampus.search.api");
 
 		// Enable CORS
-		register(CORSFilter.class);
+		this.register(CORSFilter.class);
 
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(this::onShutdown));

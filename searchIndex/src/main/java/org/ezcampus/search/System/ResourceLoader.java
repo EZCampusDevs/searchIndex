@@ -50,7 +50,7 @@ public class ResourceLoader
     
     public static void loadEnv() {
     	
-    	GlobalSettings.Log_File =  new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.log").format(new java.util.Date());
+    	GlobalSettings.Log_File = String.format("%d.log", System.currentTimeMillis());
     	
     	String log_file = System.getenv("LOG_FILE");
     	String log_dir = System.getenv("LOG_DIR");

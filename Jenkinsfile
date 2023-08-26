@@ -20,7 +20,7 @@ pipeline {
             }
         }
         
-        stage('Remote Deploy War File') {
+        stage('Remote Copy War File') {
             steps {
                 dir("searchIndex/target"){
                     sshPublisher(publishers: [

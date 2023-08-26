@@ -1,7 +1,6 @@
 package org.ezcampus.search.System;
 
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 
 public class GlobalSettings
 {
@@ -13,7 +12,7 @@ public class GlobalSettings
 
 
     public static String Log_Dir = Paths.get(".", "logs").toString();
-    public static String Log_File = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.log").format(new java.util.Date());
+    public static String Log_File = "";
 
     public static String Token_File_Path = "./token.json";
 

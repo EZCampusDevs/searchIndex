@@ -45,14 +45,14 @@ public class HibernateUtil
 			try
 			{
 
-				Logger.debug("Env user: {} , Env pass: {}", GlobalSettings.MySQL_User, "****");
+				Logger.debug("Env user: {} , Env pass: {}", GlobalSettings.DB_User, "****");
 
 				Configuration config = new Configuration();
 				 
 		        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-		        config.setProperty("hibernate.connection.url", "jdbc:mysql://"+GlobalSettings.Host+":"+GlobalSettings.Port+"/"+GlobalSettings.DB_Name+"?useSSL=false&allowPublicKeyRetrieval=true");
-		        config.setProperty("hibernate.connection.username", GlobalSettings.MySQL_User);
-		        config.setProperty("hibernate.connection.password", GlobalSettings.MySQL_Password);
+		        config.setProperty("hibernate.connection.url", "jdbc:mysql://"+GlobalSettings.DB_Host+":"+GlobalSettings.DB_Port+"/"+GlobalSettings.DB_Name+"?useSSL=false&allowPublicKeyRetrieval=true");
+		        config.setProperty("hibernate.connection.username", GlobalSettings.DB_User);
+		        config.setProperty("hibernate.connection.password", GlobalSettings.DB_Password);
 		        config.setProperty("hibernate.connection.pool_size", "10");
 		        // config.setProperty("hibernate.show_sql", "true");
 		        config.setProperty("hibernate.generate_statistics", "false");

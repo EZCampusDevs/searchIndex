@@ -1,7 +1,7 @@
 package org.ezcampus.search.System;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 
 public class GlobalSettings
 {
@@ -12,16 +12,19 @@ public class GlobalSettings
     public static final int THUMBNAIL_SIZE = 256;
 
 
-    public static final Path LOGS_DIR_PATH = Paths.get(".", "logs");
+    public static String Log_Dir = Paths.get(".", "logs").toString();
+    public static String Log_File = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.log").format(new java.util.Date());
 
-    public static Boolean isLinux = false;
+    public static String Token_File_Path = "./token.json";
+
+    public static Boolean Is_Linux = false;
     
-    public static String MySQL_User = "";
-    public static String  MySQL_Password = "";
+    public static String DB_User = "";
+    public static String  DB_Password = "";
     
-    public static String Port = "";
+    public static String DB_Port = "";
     public static String  DB_Name = "";
-    public static String  Host = "";
+    public static String  DB_Host = "";
     
 
 

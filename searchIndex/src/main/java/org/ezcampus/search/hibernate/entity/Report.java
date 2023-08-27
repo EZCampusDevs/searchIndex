@@ -33,11 +33,9 @@ public class Report
 	@JoinColumn(name = "browser_description")
 	private Browser browser;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "created_at")
 	private Date createdAt;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "description")
 	private String description;
 }

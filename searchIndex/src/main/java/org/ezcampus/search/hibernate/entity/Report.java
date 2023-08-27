@@ -33,9 +33,9 @@ public class Report
 	@JoinColumn(name = "browser_description")
 	private Browser browser;
 	
-	@JoinColumn(name = "created_at")
+	@Column(name = "created_at")
 	private Date createdAt;
 	
-	@JoinColumn(name = "description")
+	@Column(name = "description")
 	private String description;
 }

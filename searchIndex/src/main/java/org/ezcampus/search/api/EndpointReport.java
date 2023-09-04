@@ -56,7 +56,7 @@ public class EndpointReport
         //  Now that we've read in the Data, let's make sure we've got no missing fields:
         //* Atleast Report Type & Report Description should be given
 
-        if( reportData.getReportTypeId() == 0 || !reportData.getDescription().isEmpty() ) {
+        if( reportData.getReportTypeId() == 0 || reportData.getDescription().isEmpty() ) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Not enough info...").build();
             //TODO: Robustify error msgs
         }
@@ -76,7 +76,7 @@ public class EndpointReport
                 .getSingleResult();
             incomingReport.setBrowser(foundBrowser);
 
-            String findOsQ = "SELECT os FROM OperatingSystem os WHERE br.osId = :osId";
+            String findOsQ = "SELECT os FROM OperatingSystem os WHERE os.osId = :osId";
 
             OperatingSystem foundOs = session.createQuery(findOsQ, OperatingSystem.class)
                 .setParameter("osId", reportData.getOsId())

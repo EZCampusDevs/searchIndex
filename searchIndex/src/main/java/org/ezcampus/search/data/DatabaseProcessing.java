@@ -93,18 +93,17 @@ public class DatabaseProcessing
 	{
 		long start = System.nanoTime();
 		
-		List<ScrapeHistory> hist = ScrapeHistoryDAO.getUnindexedScrapeHistory();
-		
-		for(ScrapeHistory s : hist) 
-		{
-			if(s.getHasBeenIndexed())
-				continue;
+			List<ScrapeHistory> hist = ScrapeHistoryDAO.getUnindexedScrapeHistory();
+			for(ScrapeHistory s : hist) 
+			{
+				if(s.getHasBeenIndexed() || !s.hasFinishedScraping)
+					continue;
+				
+				_processScrape(s);
+			}
 			
-			_processScrape(s);
-		}
-		
-		long stopms = (long) ((System.nanoTime() - start) / 1e6);
-		Logger.info("Finished indexing after {}ms", stopms);
+			long stopms = (long) ((System.nanoTime() - start) / 1e6);
+			Logger.info("Finished indexing after {}ms", stopms);
 	}
 
 	public static void processLastScrape() throws ThreadShuttingDownException

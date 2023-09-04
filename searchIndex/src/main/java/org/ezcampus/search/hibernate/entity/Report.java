@@ -38,4 +38,24 @@ public class Report
 	
 	@Column(name = "description")
 	private String description;
+
+    public Report() {
+        this.createdAt = new Date();
+    }
+
+	public void setBrowser(Browser browser) {
+		this.browser = browser;
+	}
+
+	public void setOperatingSystem(OperatingSystem operatingSystem) {
+		this.operatingSystem = operatingSystem;
+	}
+
+	public void setReportType(ReportType reportType) {
+		this.reportType = reportType;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

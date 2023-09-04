@@ -39,8 +39,7 @@ public class EndpointReport
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-
+	@Produces(MediaType.TEXT_HTML)
 	public Response getRequestBody(String jsonPayload)
 	{
         ReportPostQuery reportData;
@@ -62,7 +61,7 @@ public class EndpointReport
             //TODO: Robustify error msgs
         }
 
-
+        Logger.info("I think REPORT Is working>....??? "+reportData.getReportTypeId());
         
         //### Write to Database ###
 

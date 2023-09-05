@@ -18,4 +18,14 @@ public class OperatingSystem
 
 	@Column(name = "os_name", length = 128)
 	private String osName;
+
+	public OperatingSystem() {}
+
+	public Integer getOsId() {
+		return this.osId;
+	}
+
+	public String getOsName() {
+		return this.osName;
+	}
 }

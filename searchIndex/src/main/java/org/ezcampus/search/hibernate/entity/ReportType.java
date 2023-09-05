@@ -21,4 +21,19 @@ public class ReportType
 	
 	@Column(name = "report_type_description", length = 512)
 	private String reportTypeDescription;
+
+	public ReportType () {}
+
+	public Integer getReportTypeId() {
+		return this.reportTypeId;
+	}
+
+	public String getReportTypeName() {
+		return this.reportTypeName;
+	}
+
+	public String getReportTypeDescription() {
+		return this.reportTypeDescription;
+	}
+
 }

@@ -22,20 +22,19 @@ public class Browser {
 	private String browserVersion;
 
 	// No-argument constructor
-	public Browser() {
-	}
+	public Browser() {}
 
 	// Getter methods
 	public Integer getBrowserId() {
-		return browserId;
+		return this.browserId;
 	}
 
 	public String getBrowserName() {
-		return browserName;
+		return this.browserName;
 	}
 
 	public String getBrowserVersion() {
-		return browserVersion;
+		return this.browserVersion;
 	}
 
 }

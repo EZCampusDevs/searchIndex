@@ -6,6 +6,7 @@ import java.util.List;
 import org.ezcampus.search.core.models.request.ReportPostQuery;
 import org.ezcampus.search.core.models.request.SearchQuery;
 import org.ezcampus.search.core.models.response.CourseDataResult;
+import org.ezcampus.search.core.models.response.GenericMessageResult;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.ezcampus.search.hibernate.entity.Browser;
 import org.ezcampus.search.hibernate.entity.OperatingSystem;
@@ -22,6 +23,7 @@ import org.tinylog.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -50,25 +52,31 @@ public class EndpointReport
 		catch (IOException e)
 		{
 			Logger.debug("Got bad json: {}", e);
-			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
+            GenericMessageResult jsonError = new GenericMessageResult("Invalid JSON Payload...");
+
+			return Response.status(Response.Status.BAD_REQUEST).entity(jsonError).build();
 		}
 
-        //  Now that we've read in the Data, let's make sure we've got no missing fields:
-        //* Atleast Report Type & Report Description should be given
+        //* REQUIRED FIELDS FOR SUBMISSION */
 
-        if( reportData.getReportTypeId() == 0 || reportData.getDescription().isEmpty() ) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Not enough info...").build();
-            //TODO: Robustify error msgs
+        if (reportData.getReportTypeId() == 0) {
+            GenericMessageResult e1 = new GenericMessageResult("Please select the type of this report.");
+            return Response.status(Response.Status.BAD_REQUEST).entity(e1).build();
         }
 
-        Logger.info("I think REPORT Is working>....??? "+reportData.getReportTypeId());
-        
+        if (reportData.getDescription().isEmpty()) {
+            GenericMessageResult e2 = new GenericMessageResult("Please include a description for this report.");
+            return Response.status(Response.Status.BAD_REQUEST).entity(e2).build();
+        }
+
         //### Write to Database ###
 
         Report incomingReport = new Report();
         
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            
+        
+        try {
+
             String findBrowserQ = "SELECT br FROM Browser br WHERE br.browserId = :browserId";
 
             Browser foundBrowser = session.createQuery(findBrowserQ, Browser.class)
@@ -90,6 +98,12 @@ public class EndpointReport
                 .getSingleResult();
             incomingReport.setReportType(foundReportType);
 
+        } catch (NoResultException e) {
+        
+        // Return the error response
+        GenericMessageResult error = new GenericMessageResult("One or more of the specified entities (OS, browserType, ReportType) were not found." + e.toString());
+        return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
+        }
             incomingReport.setDescription(reportData.getDescription());
             
             //Transaction isn't really needed here, but good practice for Atomicity
@@ -97,7 +111,10 @@ public class EndpointReport
             Transaction transaction = session.beginTransaction();
             session.persist(incomingReport);
             transaction.commit();
-            return Response.status(Response.Status.OK).entity("Successfully Submitted Your Report!").build();
+
+            GenericMessageResult success = new GenericMessageResult("Thanks, we've received your report!");
+            return Response.status(Response.Status.OK).entity(success).build();
+
         }
 
     }

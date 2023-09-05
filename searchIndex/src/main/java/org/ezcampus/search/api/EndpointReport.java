@@ -28,8 +28,8 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -40,9 +40,10 @@ public class EndpointReport
     private final ObjectMapper jsonMap = new ObjectMapper();
 
 	@POST
+    @Path("/submit")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRequestBody(String jsonPayload)
+	public Response postReport(String jsonPayload)
 	{
         ReportPostQuery reportData;
         try
@@ -118,4 +119,45 @@ public class EndpointReport
         }
 
     }
+    
+    @GET
+    @Path("/getall/{type}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTypes(@PathParam("type") String type) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            String queryString = null;
+            Class<?> entityClass = null;
+    
+            switch(type) {
+                case "Browser":
+                    queryString = "FROM Browser";
+                    entityClass = Browser.class;
+                    break;
+                case "OperatingSystem":
+                    queryString = "FROM OperatingSystem";
+                    entityClass = OperatingSystem.class;
+                    break;
+                case "ReportType":
+                    queryString = "FROM ReportType";
+                    entityClass = ReportType.class;
+                    break;
+                default:
+                    GenericMessageResult typeError = new GenericMessageResult("Sorry, we don't support this type...");
+                    return Response.status(Response.Status.BAD_REQUEST).entity(typeError).build();
+            }
+    
+            List<?> results = session.createQuery(queryString, entityClass).getResultList();
+            String jsonArray = jsonMap.writeValueAsString(results);
+            // Now you can process and return the results.
+            return Response.status(Response.Status.OK).entity(jsonArray).build();
+    
+        } catch(Exception e) {
+            // Handle exceptions
+             GenericMessageResult generalError = new GenericMessageResult("An error occurred... "+e.toString());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(generalError).build();
+        }
+    }
+
+    //Endof Report Endpoints File
 }

@@ -1,7 +1,5 @@
 package org.ezcampus.search.hibernate.entity;
 
-
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,9 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="tbl_browser")
-public class Browser
-{
+@Table(name = "tbl_browser")
+public class Browser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "browser_id")
@@ -20,7 +17,25 @@ public class Browser
 
 	@Column(name = "browser_name", length = 128)
 	private String browserName;
-	
+
 	@Column(name = "browser_version", length = 128)
 	private String browserVersion;
+
+	// No-argument constructor
+	public Browser() {
+	}
+
+	// Getter methods
+	public Integer getBrowserId() {
+		return browserId;
+	}
+
+	public String getBrowserName() {
+		return browserName;
+	}
+
+	public String getBrowserVersion() {
+		return browserVersion;
+	}
+
 }

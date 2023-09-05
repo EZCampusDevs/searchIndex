@@ -41,7 +41,7 @@ public class EndpointReport
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getRequestBody(String jsonPayload)
 	{
         ReportPostQuery reportData;

@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "tbl_report")
@@ -33,7 +35,7 @@ public class Report
 	@JoinColumn(name = "browser_description")
 	private Browser browser;
 	
-	@Column(name = "created_at")
+	@Column(name = "created_at", columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
 	private Date createdAt;
 	
 	@Column(name = "description")

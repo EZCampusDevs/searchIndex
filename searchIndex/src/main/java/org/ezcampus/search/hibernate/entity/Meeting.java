@@ -80,6 +80,10 @@ public class Meeting {
     
     @Column(name = "time_delta")
     private Integer timeDelta;
+    
+	@JoinColumn(name = "scrape_id", referencedColumnName = "scrape_id")
+    @ManyToOne(fetch=FetchType.LAZY)
+    private ScrapeHistory scrapeId;
 
 	public Integer getMeetingId()
 	{

@@ -76,6 +76,8 @@ public class CourseData {
     @ManyToOne(fetch=FetchType.LAZY)
     private ScrapeHistory scrapeId;
    
+	@Column(name = "should_be_indexed")
+	private Boolean shouldBeIndexed;
 	
     public Integer getCourseDataId()
 	{

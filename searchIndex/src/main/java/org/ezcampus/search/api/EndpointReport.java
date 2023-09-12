@@ -105,6 +105,15 @@ public class EndpointReport
         GenericMessageResult error = new GenericMessageResult("One or more of the specified entities (OS, browserType, ReportType) were not found." + e.toString());
         return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
+
+            // per row in table you can insert up to 64kb of text (a lot)
+            // limiting string to 20000 characters arbitrarily
+
+            final int MAX_CHAR_LENGTH = 20000;
+            if (reportData.getDescription().length() > MAX_CHAR_LENGTH) {
+                GenericMessageResult error = new GenericMessageResult(String.format("Description is longer than %d characters.", MAX_CHAR_LENGTH));
+                return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
+            }
             incomingReport.setDescription(reportData.getDescription());
             
             //Transaction isn't really needed here, but good practice for Atomicity

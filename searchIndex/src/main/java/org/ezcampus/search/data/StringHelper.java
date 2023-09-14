@@ -7,17 +7,42 @@ import java.util.regex.Pattern;
 
 public class StringHelper
 {
-	public static String getEllapsedTimePretty(long startTimeNano) {
-
-		long elapsedTime = System.nanoTime() - startTimeNano;
-
-		// nanoseconds to milliseconds
-        long elapsedTimeMillis = (long) (elapsedTime / 1e6);
-
-        return String.format("Elapsed Time: %s", TimeHelper.GetFormattedInterval(elapsedTimeMillis));
-
+	public static String getEllapsedTimePretty(long elapsedTimeMS) 
+	{
+        return String.format("Elapsed Time: %s", TimeHelper.GetFormattedInterval(elapsedTimeMS));
 	}
 	
+    public static String getSpecialCharacterMapping(String value)
+    {
+        switch (value)
+        {
+	        case "&&":
+	        case "&":
+	        	return "and";
+	        case "||":
+	        	return "or";
+        }
+        return null;
+    }
+	
+    public static String getNumberMapping(String value)
+    {
+        switch (value)
+        {
+        case "0": return "zero";
+        case "1": return "one";
+        case "2": return "two";
+        case "3": return "three";
+        case "4": return "four";
+        case "5": return "five";
+        case "6": return "six";
+        case "7": return "seven";
+        case "8": return "eight";
+        case "9": return "nine";
+        }
+        return null;
+    }
+    
     public static String getRomanNumeralMapping(String value)
     {
         switch (value)
@@ -32,12 +57,11 @@ public class StringHelper
                 return "4";
             case "V":
                 return "5";
-            default:
-                return null;
         }
+        return null;
     }
 
-	private static final Pattern CLEAN_REGEX = Pattern.compile("[^a-z0-9']+");
+	private static final Pattern CLEAN_REGEX = Pattern.compile("[^a-z0-9'\"-]+");
 
 	public static String cleanWord(String word)
 	{

@@ -11,8 +11,8 @@ public class StatusResponse
 	public long startTime;
 	
 	@JsonProperty("elapsed_time")
-	public long timeSinceStart;
+	public long elapsedTime;
 	
 	@JsonProperty("elapsed_time_pretty")
-	public String timeSinceStartPretty;
+	public String elapsedTimePretty;
 }

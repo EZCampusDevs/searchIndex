@@ -33,8 +33,8 @@ public class EndpointIndex
 		StatusResponse s = new StatusResponse();
 		s.isProcessing = DatabaseProcessing.isProcessing();
 		s.startTime = DatabaseProcessing.getStartTime();
-		s.timeSinceStart = DatabaseProcessing.getProcessElapsedTime();
-		s.timeSinceStartPretty = StringHelper.getEllapsedTimePretty(s.timeSinceStart);
+		s.elapsedTime = DatabaseProcessing.getProcessElapsedTimeMS();
+		s.elapsedTimePretty = StringHelper.getEllapsedTimePretty(s.elapsedTime);
 		
 		try
 		{

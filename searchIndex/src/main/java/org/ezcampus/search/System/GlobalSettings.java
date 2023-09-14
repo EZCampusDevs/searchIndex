@@ -7,6 +7,7 @@ public class GlobalSettings
     public static final String BRAND = "searchIndex";
     public static final String BRAND_LONG = "SchedulePlatform-" + BRAND;
     public static boolean IS_DEBUG = false;
+    public static boolean DEBUG_LOG_INSERTING_WORDS = false;
 
     public static final int THUMBNAIL_SIZE = 256;
 

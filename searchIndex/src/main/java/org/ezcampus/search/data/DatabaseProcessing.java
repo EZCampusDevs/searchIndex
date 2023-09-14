@@ -2,16 +2,16 @@ package org.ezcampus.search.data;
 
 import java.util.List;
 
-import org.ezcampus.search.System.ResourceLoader;
+import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.data.exceptions.ThreadShuttingDownException;
 import org.ezcampus.search.data.threading.ThreadHandling;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
-import org.ezcampus.search.hibernate.entity.Faculty;
 import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entityDAO.ScrapeHistoryDAO;
 import org.ezcampus.search.hibernate.entityDAO.WordDAO;
+import org.ezcampus.search.hibernate.entityDAO.WordMapDAO;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -20,7 +20,7 @@ import org.tinylog.Logger;
 
 public class DatabaseProcessing
 {
-	public static final String WORD_INSERT_SPLIT_REGEX = "[\\s,_]";
+	public static final String WORD_INSERT_SPLIT_REGEX = "[\\s,]";
 
 	private static boolean _isProcessing = false;
 	private static long _processingStartedAtNano = System.nanoTime();
@@ -33,14 +33,14 @@ public class DatabaseProcessing
 		return _isProcessing;
 	}
 
-	public static long getProcessElapsedTime()
+	public static long getProcessElapsedTimeMS()
 	{
 		if (isProcessing())
 		{
-			return System.nanoTime() - _processingStartedAtNano;
+			return (long)((System.nanoTime() - _processingStartedAtNano) / 1e6);
 		}
 
-		return _processingEndedAtNano - _processingStartedAtNano;
+		return (long)((_processingEndedAtNano - _processingStartedAtNano) / 1e6);
 	}
 
 	public static long getStartTimeNano()
@@ -58,64 +58,37 @@ public class DatabaseProcessing
 		return _processingEndedAt;
 	}
 
-	public static void main(String[] args) throws ThreadShuttingDownException
-	{
-		ResourceLoader.loadTinyLogConfig();
-		processLastScrape();
-	}
-
-	public static void splitInsertWord(String value, CourseData courseData, Session session)
-	{
-		if (value == null)
-			return;
-
-		for (String v : value.split(WORD_INSERT_SPLIT_REGEX))
-		{
-			if (v == null || v.isBlank())
-			{
-				continue;
-			}
-
-			String number = StringHelper.getRomanNumeralMapping(v);
-
-			if (number != null)
-			{
-				Logger.debug("Inserting word link for value '{}'", number);
-				WordDAO.insertLinkWord(number, courseData, session);
-			}
-
-			Logger.debug("Inserting word link for value '{}'", v);
-			WordDAO.insertLinkWord(v, courseData, session);
-		}
-	}
 
 	public static void processDatabase() throws ThreadShuttingDownException
 	{
-		long start = System.nanoTime();
+		Logger.info("Processing all scraped data");
 		
-			List<ScrapeHistory> hist = ScrapeHistoryDAO.getUnindexedScrapeHistory();
-			for(ScrapeHistory s : hist) 
+		_isProcessing = true;
+		_processingStartedAt = System.currentTimeMillis();
+		_processingStartedAtNano = System.nanoTime();
+		
+		try 
+		{
+			for(ScrapeHistory s : ScrapeHistoryDAO.getUnindexedScrapeHistory()) 
 			{
 				if(s.getHasBeenIndexed() || !s.hasFinishedScraping)
 					continue;
 				
 				_processScrape(s);
 			}
-			
-			long stopms = (long) ((System.nanoTime() - start) / 1e6);
-			Logger.info("Finished indexing after {}ms", stopms);
+		}
+		finally 
+		{
+			_processingEndedAt = System.currentTimeMillis();
+			_processingEndedAtNano = System.nanoTime();
+			_isProcessing = false;
+		}
+		
+		
+		Logger.info("Finished indexing after {}ms", getProcessElapsedTimeMS());
 	}
 
-	public static void processLastScrape() throws ThreadShuttingDownException
-	{
-		long start = System.nanoTime();
 
-		_processLastScrape();
-
-		long stopms = (long) ((System.nanoTime() - start) / 1e6);
-
-		Logger.info("Finished indexing after {}ms", stopms);
-	}
 
 	public static void _processScrape(ScrapeHistory scrape) throws ThreadShuttingDownException
 	{
@@ -135,54 +108,44 @@ public class DatabaseProcessing
 
 		ThreadHandling.dieIfShuttingDown();
 
-		int i = 0;
+
 		Transaction tx = null;
 
 		try (Session session = HibernateUtil.getSessionFactory().openSession())
 		{
-			_isProcessing = true;
-			_processingStartedAt = System.currentTimeMillis();
-			_processingStartedAtNano = System.nanoTime();
+			int iteration = 0;
 
 			tx = session.getTransaction();
 
-//			final String HQL1 = "SELECT cd, c, t FROM CourseData cd JOIN cd.course c JOIN c.term t";
-			final String HQL1 = "FROM CourseData cd WHERE cd.scrapeId = :sid";
-			List<CourseData> courseData_Course_Term = session.createQuery(HQL1, CourseData.class)
-					.setParameter("sid", scrape).getResultList();
+			final String HQL1 = "FROM CourseData cd WHERE cd.scrapeId = :sid AND cd.shouldBeIndexed = :sbi";
+			List<CourseData> courseDatas = session.createQuery(HQL1, CourseData.class)
+												.setParameter("sid", scrape)
+												.setParameter("sbi", true)
+												.getResultList();
 
-			int iteration = 0;
 
-			Logger.info("Found {} course terms", courseData_Course_Term.size());
-
-			for (CourseData courseData : courseData_Course_Term)
+			for (CourseData courseData : courseDatas)
 			{
 				ThreadHandling.dieIfShuttingDown();
-				Logger.debug("At CourseData iteration: {}", iteration);
-
-				iteration++;
+				
+				++iteration;
+				
+				Logger.info("Processing iteration: {} / {}", iteration, courseDatas.size());
+				
+				WordMapDAO.removeMap(session, courseData);
 
 				final String HQL2 = "FROM CourseFaculty cf JOIN FETCH cf.faculty WHERE cf.courseDataId = :cId";
-				List<CourseFaculty> courseFaculty_List = session.createQuery(HQL2, CourseFaculty.class)
-						.setParameter("cId", courseData).getResultList();
-
-				// insert all instructor names
-				for (CourseFaculty courseFaculty : courseFaculty_List)
-				{
-					Faculty faculty = courseFaculty.getFaculty();
-					splitInsertWord(faculty.getInstructorName(), courseData, session);
-
-				}
-
+				session.createQuery(HQL2, CourseFaculty.class)
+					   .setParameter("cId", courseData)
+					   .getResultList()
+					   .forEach(x -> splitInsertWord(x.getFaculty().getInstructorName(), courseData, session));
+				
+				
 				final String HQL3 = "FROM Meeting m WHERE m.courseDataId = :cId";
-				List<Meeting> meetings = session.createQuery(HQL3, Meeting.class).setParameter("cId", courseData)
-						.getResultList();
-
-				// Put all unique search strings into searchWords
-				for (Meeting meeting : meetings)
-				{
-					splitInsertWord(meeting.getBuildingDescription(), courseData, session);
-				}
+				session.createQuery(HQL3, Meeting.class)
+					   .setParameter("cId", courseData)
+					   .getResultList()
+					   .forEach(x -> splitInsertWord(x.getBuildingDescription(), courseData, session));
 
 				splitInsertWord(courseData.getCourseTitle(), courseData, session);
 				
@@ -190,19 +153,20 @@ public class DatabaseProcessing
 				splitInsertWord(courseData.getSubject().getSubjectLong(), courseData, session);
 
 				splitInsertWord(courseData.getCrn(), courseData, session);
-				splitInsertWord(courseData.getCourse().getCourseCode(), courseData, session); // Course Code, Math1010U
+				splitInsertWord(courseData.getCourse().getCourseCode(), courseData, session);
 
-				
 				splitInsertWord(courseData.getCampusDescription(), courseData, session);
 				splitInsertWord(courseData.getDelivery(), courseData, session);
-
-				// TODO: Call more columns here to improve search results
-
-			}
-
-			if (tx.isActive())
-			{
-				tx.commit();
+				
+				courseData.setShouldBeIndexed(false);
+				
+				if(!tx.isActive())
+					tx.begin();
+				
+				session.persist(courseData);
+				
+				if(tx.isActive())
+					tx.commit();
 			}
 
 			ScrapeHistoryDAO.setHasBeenIndexedById(scrape.getScrapeId(), true);
@@ -217,40 +181,31 @@ public class DatabaseProcessing
 			}
 			throw e;
 		}
-		finally
-		{
-			_processingEndedAt = System.currentTimeMillis();
-			_processingEndedAtNano = System.nanoTime();
-			_isProcessing = false;
-		}
-
-		Logger.info("Word & Word Map | Tables Loaded-in. Successfully Completed !");
+	}
+	
+	
+	private static void _insertWord(Session session, String value, CourseData courseData)
+	{
+		if (value == null || value.isBlank())
+			return;
+		
+		if(GlobalSettings.DEBUG_LOG_INSERTING_WORDS)
+			Logger.debug("Inserting word link for value '{}'", value);
+		
+		WordDAO.insertLinkWordOptimized(session, value, courseData);
 	}
 
-	public static void _processLastScrape() throws ThreadShuttingDownException
+	public static void splitInsertWord(String value, CourseData courseData, Session session)
 	{
-		if (isProcessing())
-		{
-			Logger.warn("Cannot process the database while processing is in progress");
+		if (value == null)
 			return;
-		}
 
-		ScrapeHistory lastScrape = ScrapeHistoryDAO.getNewestScrapeHistory();
-
-		if (lastScrape == null)
+		for (String v : value.split(WORD_INSERT_SPLIT_REGEX))
 		{
-			Logger.warn("Cannot index data because there is no known scrape history!");
-			return;
+			_insertWord(session, StringHelper.getNumberMapping(v), courseData);
+			_insertWord(session, StringHelper.getRomanNumeralMapping(v), courseData);
+			_insertWord(session, StringHelper.getSpecialCharacterMapping(v), courseData);
+			_insertWord(session, v, courseData);
 		}
-
-		Logger.info("Last found scrape time was: {}", lastScrape.toString());
-
-		if (lastScrape.getHasBeenIndexed())
-		{
-			Logger.info("No data to process, last scrape time was already indexed.");
-			return;
-		}
-
-		return;
 	}
 }

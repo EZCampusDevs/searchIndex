@@ -1,6 +1,7 @@
 package org.ezcampus.search.api;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.List;
 
 import org.ezcampus.search.core.models.request.ReportPostQuery;
@@ -112,7 +113,9 @@ public class EndpointReport
 
             final int MAX_CHAR_LENGTH = 16300;
             if (reportData.getDescription().length() > MAX_CHAR_LENGTH) {
-                GenericMessageResult error = new GenericMessageResult(String.format("Description is longer than %d characters.", MAX_CHAR_LENGTH));
+                    NumberFormat numberFormat = NumberFormat.getInstance(); // This gets the default locale. If you want a specific locale, use NumberFormat.getInstance(Locale.US) for instance.
+                    String formattedMaxCharLength = numberFormat.format(MAX_CHAR_LENGTH);
+                    GenericMessageResult error = new GenericMessageResult(String.format("Description is longer than %s characters.", formattedMaxCharLength));
                 return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
             }
             incomingReport.setDescription(reportData.getDescription());

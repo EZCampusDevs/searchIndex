@@ -102,14 +102,15 @@ public class EndpointReport
         } catch (NoResultException e) {
         
         // Return the error response
-        GenericMessageResult error = new GenericMessageResult("One or more of the specified entities (OS, browserType, ReportType) were not found." + e.toString());
+        GenericMessageResult error = new GenericMessageResult("Please make sure to fill in all dropdown menu options... (Type of Browser, Report & Operating System)");
         return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
 
-            // per row in table you can insert up to 64kb of text (a lot)
-            // limiting string to 20000 characters arbitrarily
+            //*SQL Text Construct maxium length: 65,535 BYTES
+            //Assuming UTF-32, king of a worst case scenario (4 bytes per char)
+            // We'll cap the Char limit to 16,300 (~65.5k / 4)
 
-            final int MAX_CHAR_LENGTH = 20000;
+            final int MAX_CHAR_LENGTH = 16300;
             if (reportData.getDescription().length() > MAX_CHAR_LENGTH) {
                 GenericMessageResult error = new GenericMessageResult(String.format("Description is longer than %d characters.", MAX_CHAR_LENGTH));
                 return Response.status(Response.Status.BAD_REQUEST).entity(error).build();

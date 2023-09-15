@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tbl_word",indexes = {@Index(columnList = "word", name = "word_index")})
-public class Word
+public class Word implements Comparable<String>
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,5 +56,11 @@ public class Word
 	public String toString()
 	{
 		return String.format("[%d %s]", this.wordId, this.word);
+	}
+
+
+	public int compareTo(String o)
+	{
+		return this.word.compareTo(o);
 	}
 }

@@ -105,6 +105,9 @@ public class HashMapWordInserter implements WordInserter
 			cache.remove(w.getWordString());
 		}
 		
+		if(cache.size() == 0)
+			return words;
+		
 		Logger.debug("Batch insert {} words into the db", cache.size());
 		
 		Transaction tx = session.beginTransaction();

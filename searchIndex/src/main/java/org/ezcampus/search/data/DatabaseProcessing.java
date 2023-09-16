@@ -2,15 +2,15 @@ package org.ezcampus.search.data;
 
 import java.util.List;
 
-import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.data.exceptions.ThreadShuttingDownException;
+import org.ezcampus.search.data.inserter.HashMapWordInserter;
+import org.ezcampus.search.data.inserter.WordInserter;
 import org.ezcampus.search.data.threading.ThreadHandling;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
 import org.ezcampus.search.hibernate.entity.Meeting;
 import org.ezcampus.search.hibernate.entity.ScrapeHistory;
 import org.ezcampus.search.hibernate.entityDAO.ScrapeHistoryDAO;
-import org.ezcampus.search.hibernate.entityDAO.WordDAO;
 import org.ezcampus.search.hibernate.entityDAO.WordMapDAO;
 import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.hibernate.HibernateException;
@@ -27,6 +27,8 @@ public class DatabaseProcessing
 	private static long _processingStartedAt = System.currentTimeMillis();
 	private static long _processingEndedAtNano = System.nanoTime();
 	private static long _processingEndedAt = System.currentTimeMillis();
+	
+	private static WordInserter inserter = new HashMapWordInserter();
 
 	public static boolean isProcessing()
 	{
@@ -116,6 +118,8 @@ public class DatabaseProcessing
 			int iteration = 0;
 
 			tx = session.getTransaction();
+			
+			inserter.init(session);
 
 			final String HQL1 = "FROM CourseData cd WHERE cd.scrapeId = :sid AND cd.shouldBeIndexed = :sbi";
 			List<CourseData> courseDatas = session.createQuery(HQL1, CourseData.class)
@@ -158,6 +162,8 @@ public class DatabaseProcessing
 				splitInsertWord(courseData.getCampusDescription(), courseData, session);
 				splitInsertWord(courseData.getDelivery(), courseData, session);
 				
+				inserter.associateWords(session, courseData);
+				
 				courseData.setShouldBeIndexed(false);
 				
 				if(!tx.isActive())
@@ -183,17 +189,6 @@ public class DatabaseProcessing
 		}
 	}
 	
-	
-	private static void _insertWord(Session session, String value, CourseData courseData)
-	{
-		if (value == null || value.isBlank())
-			return;
-		
-		if(GlobalSettings.DEBUG_LOG_INSERTING_WORDS)
-			Logger.debug("Inserting word link for value '{}'", value);
-		
-		WordDAO.insertLinkWordOptimized(session, value, courseData);
-	}
 
 	public static void splitInsertWord(String value, CourseData courseData, Session session)
 	{
@@ -202,10 +197,12 @@ public class DatabaseProcessing
 
 		for (String v : value.split(WORD_INSERT_SPLIT_REGEX))
 		{
-			_insertWord(session, StringHelper.getNumberMapping(v), courseData);
-			_insertWord(session, StringHelper.getRomanNumeralMapping(v), courseData);
-			_insertWord(session, StringHelper.getSpecialCharacterMapping(v), courseData);
-			_insertWord(session, v, courseData);
+			v = StringHelper.cleanWord(v);
+			
+			inserter.insertWord(session, StringHelper.getNumberMapping(v));
+			inserter.insertWord(session, StringHelper.getRomanNumeralMapping(v));
+			inserter.insertWord(session, StringHelper.getSpecialCharacterMapping(v));
+			inserter.insertWord(session, v);
 		}
 	}
 }

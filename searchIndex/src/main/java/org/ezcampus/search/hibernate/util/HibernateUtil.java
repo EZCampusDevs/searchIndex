@@ -67,10 +67,10 @@ public class HibernateUtil
 		        config.setProperty("hibernate.dbcp.minIdle", "5");
 		        config.setProperty("hibernate.dbcp.maxWaitMillis", "-1");
 		        
-//		        config.setProperty("hibernate.jdbc.batch_size", "50");
-//		        config.setProperty("hibernate.order_inserts", "true");
-//		        config.setProperty("hibernate.order_updates", "true");
-//		        config.setProperty("hibernate.batch_versioned_data", "true");
+		        config.setProperty("hibernate.jdbc.batch_size", "50");
+		        config.setProperty("hibernate.order_inserts", "true");
+		        config.setProperty("hibernate.order_updates", "true");
+		        config.setProperty("hibernate.batch_versioned_data", "true");
 		 
 		        config.addAnnotatedClass(Word.class);
 		        config.addAnnotatedClass(WordMap.class);

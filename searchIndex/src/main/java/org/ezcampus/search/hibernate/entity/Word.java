@@ -63,4 +63,10 @@ public class Word implements Comparable<String>
 	{
 		return this.word.compareTo(o);
 	}
+	
+	@Override
+	public int hashCode() 
+	{
+	    return this.wordId;
+	}
 }

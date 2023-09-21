@@ -6,6 +6,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import org.ezcampus.search.System.GlobalSettings;
 import org.ezcampus.search.System.ResourceLoader;
 import org.ezcampus.search.data.threading.ThreadHandling;
+import org.ezcampus.search.hibernate.util.HibernateUtil;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.tinylog.Logger;
 
@@ -62,7 +63,8 @@ public class Program extends ResourceConfig
 
 		// Enable CORS
 		this.register(CORSFilter.class);
-
+		
+		HibernateUtil.getSessionFactory();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(this::onShutdown));
 	}

@@ -24,8 +24,34 @@ pipeline {
             steps {
                 dir("searchIndex/target"){
                     sshPublisher(publishers: [
-                        sshPublisherDesc(configName: '2GB_Glassfish_VPS', transfers: [
-                            sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, 
+                        sshPublisherDesc(
+                            configName: '2GB_Glassfish_VPS', 
+                            transfers: [
+                                sshTransfer(
+                                    cleanRemote: false, 
+                                    excludes: '', 
+                                    execCommand: '''
+                                    
+                                        function makedirs() {
+                                            num="$1"
+
+                                            auto_deploy="$HOME/volumes/glassfish/autodeploy_${num}"
+
+                                            mkdir -p "${auto_deploy}"
+
+                                            chmod -R 770 "${auto_deploy}"
+
+                                            cp $HOME/warbuilds/searchIndex.war "$auto_deploy"
+                                        }
+
+                                        makedirs "a"
+                                        makedirs "b"
+
+
+                                    ''', 
+                                    execTimeout: 120000, 
+                                    flatten: false, 
+                                    makeEmptyDirs: false, 
                             noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: './warbuilds', remoteDirectorySDF: false, 
                             removePrefix: '', sourceFiles: 'searchIndex.war')
                         ], 

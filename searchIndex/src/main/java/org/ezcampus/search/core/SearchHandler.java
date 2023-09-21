@@ -3,13 +3,9 @@ package org.ezcampus.search.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.ezcampus.search.System.GlobalSettings;
-import org.ezcampus.search.System.ResourceLoader;
 import org.ezcampus.search.core.models.response.CourseDataResult;
 import org.ezcampus.search.data.StringHelper;
-import org.ezcampus.search.data.exceptions.ThreadShuttingDownException;
 import org.ezcampus.search.hibernate.entity.Course;
 import org.ezcampus.search.hibernate.entity.CourseData;
 import org.ezcampus.search.hibernate.entity.CourseFaculty;
@@ -217,10 +213,7 @@ public abstract class SearchHandler
 				CourseDataResult cdr = loadSingleCDR(courseData, session);
 				CDR_Query.add(cdr);
 
-				System.out.println("course_data_id: " + result[0]);
-				System.out.println("course_title: " + result[1]);
-				System.out.println("course_rank: " + result[2]);
-				System.out.println();
+				Logger.debug("course_data_id: {}\ncourse_title: {}\ncourse_rank: {}", result[0], result[1], result[2]);
 			}
 		}
 

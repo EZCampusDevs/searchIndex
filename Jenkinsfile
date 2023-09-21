@@ -32,20 +32,31 @@ pipeline {
                                     excludes: '', 
                                     execCommand: '''
                                     
-                                        function makedirs() {
+                                        log_dir="$HOME/log/jenkins-ssh"
+                                        mkdir -p "$log_dir"
+                                
+                                        log_file="$log_dir/pipeline_build_searchindex.out"
+                                        touch "$log_file"
+                                
+                                        exec 3>&1 4>&2
+                                        trap 'exec 2>&4 1>&3' 0 1 2 3
+                                        exec 1>"$log_file" 2>&1
+
+
+                                        make_and_copy() {
                                             num="$1"
 
                                             auto_deploy="$HOME/volumes/glassfish/autodeploy_${num}"
 
                                             mkdir -p "${auto_deploy}"
 
-                                            chmod -R 770 "${auto_deploy}"
+                                            chmod 770 "${auto_deploy}"
 
-                                            cp $HOME/warbuilds/searchIndex.war "$auto_deploy"
+                                            cp -f $HOME/warbuilds/searchIndex.war "$auto_deploy"
                                         }
 
-                                        makedirs "a"
-                                        makedirs "b"
+                                        make_and_copy "a"
+                                        make_and_copy "b"
 
 
                                     ''', 

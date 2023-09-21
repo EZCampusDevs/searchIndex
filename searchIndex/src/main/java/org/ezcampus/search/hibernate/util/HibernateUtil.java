@@ -40,57 +40,64 @@ public class HibernateUtil
 		
 		Logger.debug("Config path {} exists: {}", CONFIG_PATH, new File(CONFIG_PATH).exists());
 		
-		if (sessionFactory == null)
+		if (sessionFactory != null)
 		{
-			try
-			{
+			return sessionFactory;
+		}
+		
+		try
+		{
 
-				Logger.debug("Env user: {} , Env pass: {}", GlobalSettings.DB_User, "****");
+			Logger.debug("Env user: {} , Env pass: {}", GlobalSettings.DB_User, "****");
 
-				Configuration config = new Configuration();
-				 
-		        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-		        config.setProperty("hibernate.connection.url", "jdbc:mysql://"+GlobalSettings.DB_Host+":"+GlobalSettings.DB_Port+"/"+GlobalSettings.DB_Name+"?useSSL=false&allowPublicKeyRetrieval=true");
-		        config.setProperty("hibernate.connection.username", GlobalSettings.DB_User);
-		        config.setProperty("hibernate.connection.password", GlobalSettings.DB_Password);
-		        config.setProperty("hibernate.connection.pool_size", "10");
-		        // config.setProperty("hibernate.show_sql", "true");
-		        config.setProperty("hibernate.generate_statistics", "false");
-		        
-		        config.setProperty("hibernate.current_session_context_class", "thread");
-		        config.setProperty("hibernate.hbm2ddl.auto", "validate");
-		        config.setProperty("hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS", "1");
-		        
-		        config.setProperty("hibernate.dbcp.initialSize", "5");
-		        config.setProperty("hibernate.dbcp.maxTotal", "20");
-		        config.setProperty("hibernate.dbcp.maxIdle", "10");
-		        config.setProperty("hibernate.dbcp.minIdle", "5");
-		        config.setProperty("hibernate.dbcp.maxWaitMillis", "-1");
-		        
-		        config.setProperty("hibernate.jdbc.batch_size", "50");
-		        config.setProperty("hibernate.order_inserts", "true");
-		        config.setProperty("hibernate.order_updates", "true");
-		        config.setProperty("hibernate.batch_versioned_data", "true");
-		 
-		        config.addAnnotatedClass(Word.class);
-		        config.addAnnotatedClass(WordMap.class);
-		        config.addAnnotatedClass(Term.class);
-		        config.addAnnotatedClass(ClassType.class);
-		        config.addAnnotatedClass(Course.class);
-		        config.addAnnotatedClass(CourseData.class);
-		        config.addAnnotatedClass(Meeting.class);
-		        config.addAnnotatedClass(Faculty.class);
-		        config.addAnnotatedClass(CourseFaculty.class);
-		        config.addAnnotatedClass(ScrapeHistory.class);
-		        config.addAnnotatedClass(School.class);
-		        config.addAnnotatedClass(Subject.class);
-		        config.addAnnotatedClass(ReportType.class);
-		        config.addAnnotatedClass(Report.class);
-		        config.addAnnotatedClass(OperatingSystem.class);
-		        config.addAnnotatedClass(Browser.class);
-		        
-				sessionFactory = config.buildSessionFactory();
-				
+			Configuration config = new Configuration();
+			 
+	        config.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+	        config.setProperty("hibernate.connection.url", "jdbc:mysql://"+GlobalSettings.DB_Host+":"+GlobalSettings.DB_Port+"/"+GlobalSettings.DB_Name+"?useSSL=false&allowPublicKeyRetrieval=true");
+	        config.setProperty("hibernate.connection.username", GlobalSettings.DB_User);
+	        config.setProperty("hibernate.connection.password", GlobalSettings.DB_Password);
+	        config.setProperty("hibernate.connection.pool_size", "10");
+
+	        config.setProperty("hibernate.generate_statistics", "false");
+	        
+	        config.setProperty("hibernate.current_session_context_class", "thread");
+	        config.setProperty("hibernate.hbm2ddl.auto", "validate");
+	        
+	        if(GlobalSettings.IS_DEBUG) {
+	        	config.setProperty("hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS", "1");
+	        	config.setProperty("hibernate.show_sql", "true");
+	        }
+	        
+	        config.setProperty("hibernate.dbcp.initialSize", "5");
+	        config.setProperty("hibernate.dbcp.maxTotal", "20");
+	        config.setProperty("hibernate.dbcp.maxIdle", "10");
+	        config.setProperty("hibernate.dbcp.minIdle", "5");
+	        config.setProperty("hibernate.dbcp.maxWaitMillis", "-1");
+	        
+	        config.setProperty("hibernate.jdbc.batch_size", "50");
+	        config.setProperty("hibernate.order_inserts", "true");
+	        config.setProperty("hibernate.order_updates", "true");
+	        config.setProperty("hibernate.batch_versioned_data", "true");
+	 
+	        config.addAnnotatedClass(Word.class);
+	        config.addAnnotatedClass(WordMap.class);
+	        config.addAnnotatedClass(Term.class);
+	        config.addAnnotatedClass(ClassType.class);
+	        config.addAnnotatedClass(Course.class);
+	        config.addAnnotatedClass(CourseData.class);
+	        config.addAnnotatedClass(Meeting.class);
+	        config.addAnnotatedClass(Faculty.class);
+	        config.addAnnotatedClass(CourseFaculty.class);
+	        config.addAnnotatedClass(ScrapeHistory.class);
+	        config.addAnnotatedClass(School.class);
+	        config.addAnnotatedClass(Subject.class);
+	        config.addAnnotatedClass(ReportType.class);
+	        config.addAnnotatedClass(Report.class);
+	        config.addAnnotatedClass(OperatingSystem.class);
+	        config.addAnnotatedClass(Browser.class);
+	        
+			sessionFactory = config.buildSessionFactory();
+			
 /*
 				// Create registry
 				registry = new StandardServiceRegistryBuilder().configure(CONFIG_PATH).build();
@@ -106,17 +113,17 @@ public class HibernateUtil
 				
 				*/
 
-			}
-			catch (Exception e)
-			{
-				Logger.error(e);
+		}
+		catch (Exception e)
+		{
+			Logger.error(e);
 
-				if (registry != null)
-				{
-					StandardServiceRegistryBuilder.destroy(registry);
-				}
+			if (registry != null)
+			{
+				StandardServiceRegistryBuilder.destroy(registry);
 			}
 		}
+		
 		return sessionFactory;
 	}
 

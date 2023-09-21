@@ -21,15 +21,25 @@ public class EndpointCommon
 {
 	private final ObjectMapper JSON_MAPPER = new ObjectMapper();
 	
+	final static String LICENSE_URL = "https://www.gnu.org/licenses/agpl-3.0.html";
+	final static String SOURCE_URL = "https://github.com/EZCampusDevs/searchIndex";
+	
+	private static String HEARTBEAT_STRING = null;
+	
 	public Response heartBeat() 
 	{
-		HashMap<String, String> hm = new HashMap<String, String>();
-		hm.put("Hello", "From EZCampus");
-		hm.put("Our server", "Is Online");
-		
 		try
 		{
-			return Response.status(Response.Status.OK).entity(JSON_MAPPER.writeValueAsString(hm)).build();
+			if(HEARTBEAT_STRING == null) {
+				HashMap<String, String> hm = new HashMap<String, String>();
+				hm.put("detail", "EZCampus SearchIndex Backend");
+				hm.put("license", LICENSE_URL);
+				hm.put("source", SOURCE_URL);
+				
+				HEARTBEAT_STRING = JSON_MAPPER.writeValueAsString(hm);
+			}
+			
+			return Response.status(Response.Status.OK).entity(HEARTBEAT_STRING).build();
 		}
 		catch (JsonProcessingException e)
 		{

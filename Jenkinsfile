@@ -25,7 +25,7 @@ pipeline {
                 dir("searchIndex/target"){
                     sshPublisher(publishers: [
                         sshPublisherDesc(
-                            configName: '${SSH_SERVER}', 
+                            configName: "${SSH_SERVER}", 
                             transfers: [
                                 sshTransfer(
                                     cleanRemote: false, 

@@ -25,7 +25,7 @@ pipeline {
                 dir("searchIndex/target"){
                     sshPublisher(publishers: [
                         sshPublisherDesc(
-                            configName: '2GB_Glassfish_VPS', 
+                            configName: '${SSH_SERVER}', 
                             transfers: [
                                 sshTransfer(
                                     cleanRemote: false, 

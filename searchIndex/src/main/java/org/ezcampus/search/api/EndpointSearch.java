@@ -36,6 +36,8 @@ public class EndpointSearch
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getRequestBody(String jsonPayload)
 	{
+		Logger.info("got json payload for search");
+		
 		SearchQuery requestData;
 		try
 		{
@@ -46,11 +48,15 @@ public class EndpointSearch
 			Logger.debug("Got bad json: {}", e);
 			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid JSON payload").build();
 		}
+
+		Logger.info("got search terms {}", requestData.getSearchTerm());
 		
 		List<CourseDataResult> results;
 
 		if (requestData.getSearchMethod())
 		{
+			Logger.info("searching fuzzy");
+			
 			results = SearchHandler.searchFuzzy(
 					requestData.getSearchTerm(), requestData.getPage(), requestData.getResultsPerPage(),
 					requestData.getTerm()
@@ -58,12 +64,15 @@ public class EndpointSearch
 		}
 		else
 		{ // ⚡ Performance Boosted by: Minno ⚡
+			Logger.info("searching native");
+			
 			results = SearchHandler.searchNative(
 					requestData.getSearchTerm(), requestData.getPage(), requestData.getResultsPerPage(),
 					requestData.getTerm()
 			);
 		}
 
+		Logger.info("search results {}", results);
 
 		try
 		{

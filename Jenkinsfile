@@ -52,7 +52,7 @@ pipeline {
 
                                             chmod 770 "${auto_deploy}"
 
-                                            cp -f $HOME/warbuilds/searchIndex.war "$auto_deploy"
+                                            cp -f $HOME/warbuilds/firepit.war "$auto_deploy"
                                         }
 
                                         make_and_copy "a"
@@ -64,7 +64,7 @@ pipeline {
                                     flatten: false, 
                                     makeEmptyDirs: false, 
                             noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: './warbuilds', remoteDirectorySDF: false, 
-                            removePrefix: '', sourceFiles: 'searchIndex.war')
+                            removePrefix: '', sourceFiles: 'firepit.war')
                         ], 
                         usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)
                     ])
